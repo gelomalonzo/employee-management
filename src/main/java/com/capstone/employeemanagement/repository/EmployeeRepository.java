@@ -12,17 +12,24 @@ import com.capstone.employeemanagement.model.Employee;
 @Repository
 public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
 	
-	// filter employee name by keyword
-	List<Employee> findByNameContainingIgnoreCaseOrderByNameAsc(String keyword);
-	
-	// filter by birth date range
-	// note: birth date is in Person class
-	List<Employee> findByBirthDateBetweenOrderByBirthDateAsc(LocalDate minDate, LocalDate maxDate);
-	
-	// filter by salary range
-	// List<Employee> findBySalaryBetweenOrderBySalaryAsc(BigDecimal minSalary, BigDecimal maxSalary);
+	// filter by name
+	List<Employee> findByNameContainingIgnoreCaseOrderByNameAsc(String name);
 	
 	// filter by department
-	List<Employee> findByDeparment(Department department);
-
+	List<Employee> findByDepartment(Department department);
+	
+	// filter by age (birth date)
+	List<Employee> findByBirthDateBetweenOrderByBirthDateAsc(LocalDate minDate, LocalDate maxDate);
+	
+	// filter by name and department
+	List<Employee> findByNameContainingIgnoreCaseAndDepartmentOrderByNameAsc(String name, Department department);
+	
+	// filter by name and age (birth date)
+	List<Employee> findByNameContainingIgnoreCaseAndBirthDateBetweenOrderByNameAsc(String name, LocalDate minDate, LocalDate maxDate);
+	
+	// filter by department and age (birth date)
+	List<Employee> findByDepartmentAndBirthDateBetween(Department department, LocalDate minDate, LocalDate maxDate);
+	
+	// filter by name, department, and age (birth date)
+	List<Employee> findByNameContainingIgnoreCaseAndDepartmentAndBirthDateBetweenOrderByNameAsc(String name, Department department, LocalDate minDate, LocalDate maxDate);
 }

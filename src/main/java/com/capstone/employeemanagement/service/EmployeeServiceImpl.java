@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.capstone.employeemanagement.model.Department;
@@ -19,47 +20,107 @@ public class EmployeeServiceImpl implements EmployeeService {
 	
 	@Autowired
 	private EmployeeRepository employeeRepo;
+	
+	@Autowired
 	private DepartmentRepository departmentRepo;
 	
-	@Override
-	public List<Employee> getEmployeeById(Integer employeeId) {
-		Optional<Employee> employeeOptional = employeeRepo.findById(employeeId);
+	private Department getDepartment(Integer departmentId) {
+		Optional<Department> departmentOptional = departmentRepo.findById(departmentId);
 		
-		if (!employeeOptional.isPresent()) {
-			return new ArrayList<>(); // EMPTY: no employee found with the specified employee ID
+		if (!departmentOptional.isPresent()) {
+			return null;
 		}
 		
-		List<Employee> employees = new ArrayList<>();
-		employees.add(employeeOptional.get());
+		return departmentOptional.get();
+	}
+	
+	private ArrayList<LocalDate> getBirthDateRange(Integer minAge, Integer maxAge) {
+		LocalDate today = LocalDate.now();
 		
-		return employees;
+		ArrayList<LocalDate> birthDateRange = new ArrayList<>();
+		birthDateRange.add(today.minusYears(maxAge).plusDays(1)); // earliest birth date
+		birthDateRange.add(today.minusYears(minAge)); // latest birth date
+		
+		return birthDateRange;
 	}
 	
 	@Override
-	public List<Employee> getEmployeeByName(String keyword) {
-		return employeeRepo.findByNameContainingIgnoreCaseOrderByNameAsc(keyword);
+	public List<Employee> getAllEmployees() {
+		return employeeRepo.findAll(Sort.by("id"));
+	}
+	
+	@Override
+	public Employee getEmployeeById(Integer employeeId) {
+		Optional<Employee> employeeOptional = employeeRepo.findById(employeeId);
+		
+		if (employeeOptional.isEmpty()) {
+			return null; // EMPTY: no employee found with the specified employee ID
+		}
+		
+		return employeeOptional.get();
+	}
+	
+	@Override
+	public List<Employee> getEmployeesByName(String name) {
+		return employeeRepo.findByNameContainingIgnoreCaseOrderByNameAsc(name);
 	}
 	
 	@Override
 	public List<Employee> getEmployeesByDepartment(Integer departmentId) {
-		Optional<Department> departmentOptional = departmentRepo.findById(departmentId);
-		
-		if (!departmentOptional.isPresent()) {
-			return null; // ERROR: no department found with the specified department ID
+		Department department = getDepartment(departmentId);
+		if (department == null) {
+			return null;
 		}
 		
-		Department department = departmentOptional.get();
-		
-		return employeeRepo.findByDeparment(department);
+		return employeeRepo.findByDepartment(department);
 	}
 	
 	@Override
-	public List<Employee> getEmployeesByAgeRange(int minAge, int maxAge) {
-		LocalDate today = LocalDate.now();
-		LocalDate earliestBirthDate = today.minusYears(minAge);
-		LocalDate latestBirthDate = today.minusYears(maxAge);
+	public List<Employee> getEmployeesByAge(Integer minAge, Integer maxAge) {
+		ArrayList<LocalDate> birthDateRange = getBirthDateRange(minAge, maxAge);
 		
-		return employeeRepo.findByBirthDateBetweenOrderByBirthDateAsc(earliestBirthDate, latestBirthDate);
+		return employeeRepo.findByBirthDateBetweenOrderByBirthDateAsc(birthDateRange.get(0), birthDateRange.get(1));
+	}
+	
+	@Override
+	public List<Employee> getEmployeesByNameAndDepartment(String name, Integer departmentId) {
+		Department department = getDepartment(departmentId);
+		if (department == null) {
+			return null;
+		}
+		
+		return employeeRepo.findByNameContainingIgnoreCaseAndDepartmentOrderByNameAsc(name, department);
+	}
+	
+	@Override
+	public List<Employee> getEmployeesByNameAndAge(String name, Integer minAge, Integer maxAge) {
+		ArrayList<LocalDate> birthDateRange = getBirthDateRange(minAge, maxAge);
+		
+		return employeeRepo.findByNameContainingIgnoreCaseAndBirthDateBetweenOrderByNameAsc(name, birthDateRange.get(0), birthDateRange.get(1));
+	}
+	
+	@Override
+	public List<Employee> getEmployeesByDepartmentAndAge(Integer departmentId, Integer minAge, Integer maxAge) {
+		Department department = getDepartment(departmentId);
+		if (department == null) {
+			return null;
+		}
+		
+		ArrayList<LocalDate> birthDateRange = getBirthDateRange(minAge, maxAge);
+		
+		return employeeRepo.findByDepartmentAndBirthDateBetween(department, birthDateRange.get(0), birthDateRange.get(1));
+	}
+	
+	@Override
+	public List<Employee> getEmployeesByNameAndDepartmentAndAge(String name, Integer departmentId, Integer minAge, Integer maxAge) {
+		Department department = getDepartment(departmentId);
+		if (department == null) {
+			return null;
+		}
+		
+		ArrayList<LocalDate> birthDateRange = getBirthDateRange(minAge, maxAge);
+		
+		return employeeRepo.findByNameContainingIgnoreCaseAndDepartmentAndBirthDateBetweenOrderByNameAsc(name, department, birthDateRange.get(0), birthDateRange.get(1));
 	}
 	
 	@Override
@@ -82,6 +143,16 @@ public class EmployeeServiceImpl implements EmployeeService {
 		}
 		
 		return sumAge / employees.size();
+	}
+
+	@Override
+	public Employee saveEmployee(Employee employee) {
+		return employeeRepo.save(employee);
+	}
+
+	@Override
+	public void deleteEmployee(Integer employeeId) {
+		employeeRepo.deleteById(employeeId);
 	}
 
 }

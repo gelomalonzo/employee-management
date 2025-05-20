@@ -8,11 +8,19 @@ import com.capstone.employeemanagement.model.Employee;
 
 public interface EmployeeService {
 	
-	List<Employee> getEmployeeById(Integer employeeId);
-	List<Employee> getEmployeeByName(String keyword);
+	List<Employee> getAllEmployees();
+	Employee getEmployeeById(Integer employeeId);
+	List<Employee> getEmployeesByName(String name);
 	List<Employee> getEmployeesByDepartment(Integer departmentId);
-	List<Employee> getEmployeesByAgeRange(int minAge, int maxAge);
+	List<Employee> getEmployeesByAge(Integer minAge, Integer maxAge);
+	List<Employee> getEmployeesByNameAndDepartment(String name, Integer departmentId);
+	List<Employee> getEmployeesByNameAndAge(String name, Integer minAge, Integer maxAge);
+	List<Employee> getEmployeesByDepartmentAndAge(Integer departmentId, Integer minAge, Integer maxAge);
+	List<Employee> getEmployeesByNameAndDepartmentAndAge(String name, Integer departmentId, Integer minAge, Integer maxAge);
 	BigDecimal getAverageSalary(List<Employee> employees);
 	Integer getAverageAge(List<Employee> employees);
+	
+	Employee saveEmployee(Employee employee); // add new employee or update employee details
+	void deleteEmployee(Integer employeeId);
 
 }
