@@ -37,5 +37,18 @@ public abstract class Person {
 	public void setBirthDate(LocalDate birthDate) {
 		this.birthDate = birthDate;
 	}
+	
+	public int getAge() {
+		LocalDate today = LocalDate.now();
+		int age = today.getYear() - this.getBirthDate().getYear();
+		
+		if (today.getMonthValue() < this.getBirthDate().getMonthValue()) {
+			age--; // subtract 1 from age if current month is earlier than the birth month
+		} else if (today.getMonthValue() == this.getBirthDate().getMonthValue() && today.getDayOfMonth() < this.getBirthDate().getDayOfMonth()) {
+			age--; // subtract 1 from age if current month is the birth month, but current day is earlier than birth day
+		}
+		
+		return age;
+	}
 
 }

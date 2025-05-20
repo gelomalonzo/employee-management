@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 import jakarta.persistence.*;
 
 @Entity
-public class Employee {
+public class Employee extends Person {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
