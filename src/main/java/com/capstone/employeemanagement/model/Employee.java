@@ -1,6 +1,7 @@
 package com.capstone.employeemanagement.model;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import jakarta.persistence.*;
 
@@ -23,7 +24,8 @@ public class Employee extends Person {
 		
 	}
 	
-	public Employee(BigDecimal salary, Department department) {
+	public Employee(String name, LocalDate birthDate, BigDecimal salary, Department department) {
+		super(name, birthDate);
 		this.salary = salary;
 		this.department = department;
 	}
