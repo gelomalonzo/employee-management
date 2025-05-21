@@ -178,12 +178,12 @@ public class EmployeeController {
 		return ResponseEntity.ok(response);
 	}
 	
-	@PostMapping("/employees/save") // both for adding a new employee and for updating details of existing employee
-	public ResponseEntity<?> saveEmployee(
+	@PostMapping("/employees/add")
+	public ResponseEntity<?> addEmployee(
 		@RequestParam(name = "name", required = true) String name,
 		@RequestParam(name = "birthDate", required = true) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate birthDate,
 		@RequestParam(name = "salary", required = true) BigDecimal salary,
-		@RequestParam(name = "department", required = true) Integer departmentId
+		@RequestParam(name = "departmentId", required = true) Integer departmentId
 	) {
 		Map<String, Object> response = new HashMap<>();
 		
@@ -191,7 +191,15 @@ public class EmployeeController {
 		if (department == null) {
 			response.put("success", false);
 			response.put("message", "Error adding new employee. Couldn't find department.");
-			response.put("redirect", "/employees");
+			response.put("redirect", "/home");
+			
+			return ResponseEntity.badRequest().body(response);
+		}
+		
+		if (name == null || name.isBlank() || name.isEmpty() || birthDate == null || salary == null) {
+			response.put("success", false);
+			response.put("message", "Error adding new employee. All fields must be filled out.");
+			response.put("redirect", "/home");
 			
 			return ResponseEntity.badRequest().body(response);
 		}
@@ -204,7 +212,51 @@ public class EmployeeController {
 		return ResponseEntity.ok(response);
 	}
 	
-	@DeleteMapping("/employees/delete/{id}")
+	@PostMapping("/employees/{id}/edit")
+	public ResponseEntity<?> editEmployee(
+		@PathVariable(name = "id") Integer id,
+		@RequestParam(name = "name", required = true) String name,
+		@RequestParam(name = "birthDate", required = true) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate birthDate,
+		@RequestParam(name = "salary", required = true) BigDecimal salary,
+		@RequestParam(name = "departmentId", required = true) Integer departmentId
+	) {
+		Map<String, Object> response = new HashMap<>();
+		
+		Department department = departmentService.getDepartmentById(departmentId);
+		if (department == null) {
+			response.put("success", false);
+			response.put("message", "Error editing employee's department. Couldn't find department.");
+			response.put("redirect", "/home");
+			
+			return ResponseEntity.badRequest().body(response);
+		}
+		
+		Employee employee = employeeService.getEmployeeById(id);
+		if (employee == null) {
+			response.put("success", false);
+			response.put("message", "Error editing employee. Couldn't find employee's ID on the database.");
+			response.put("redirect", "/home");
+			
+			return ResponseEntity.badRequest().body(response);
+		}
+		
+		if (name == null || name.isBlank() || name.isEmpty() || birthDate == null || salary == null) {
+			response.put("success", false);
+			response.put("message", "Error editing employee. All fields must be filled out.");
+			response.put("redirect", "/home");
+			
+			return ResponseEntity.badRequest().body(response);
+		}
+		
+		employee.setName(name);
+		employee.setBirthDate(birthDate);
+		
+		response = generateResponseForSavedEmployee(employee);
+		
+		return ResponseEntity.ok(response);
+	}
+	
+	@DeleteMapping("/employees/{id}/delete")
 	public ResponseEntity<?> deleteEmployee(
 		@PathVariable(name = "id") Integer id
 	) {
