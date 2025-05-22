@@ -9,6 +9,44 @@ window.onload = () => {
 	var employees = fetchAllEmployees();
 };
 
+document.addEventListener("DOMContentLoaded", () => {
+	const table = document.getElementById("employeeTable");
+	const tbody = document.getElementById("employeeTableBody");
+	let sortDirection = {};
+
+	table.querySelectorAll("th[data-sort]").forEach(th => {
+		th.style.cursor = "pointer";
+		th.addEventListener("click", () => {
+			const key = th.dataset.sort;
+			const direction = sortDirection[key] === "asc" ? "desc" : "asc";
+			sortDirection[key] = direction;
+
+			const rows = Array.from(tbody.querySelectorAll("tr"));
+
+			rows.sort((a, b) => {
+				let aText = a.querySelector(`td:nth-child(${th.cellIndex + 1})`).textContent.trim();
+				let bText = b.querySelector(`td:nth-child(${th.cellIndex + 1})`).textContent.trim();
+
+				if (key === "id" || key === "salary") {
+					aText = parseFloat(aText.replace(/[^0-9.-]+/g, ""));
+					bText = parseFloat(bText.replace(/[^0-9.-]+/g, ""));
+				}
+
+				if (key === "dob") {
+					aText = new Date(aText);
+					bText = new Date(bText);
+				}
+
+				if (aText < bText) return direction === "asc" ? -1 : 1;
+				if (aText > bText) return direction === "asc" ? 1 : -1;
+				return 0;
+			});
+
+			rows.forEach(row => tbody.appendChild(row));
+		});
+	});
+});
+
 function displayHome(averageSalary, averageAge, minAgeRange, maxAgeRange, employees) {
 	const noOfEmployeesContainer = document.getElementById('noOfEmployeesContainer');
 	noOfEmployeesContainer.innerHTML = employees.length;
@@ -22,8 +60,8 @@ function displayHome(averageSalary, averageAge, minAgeRange, maxAgeRange, employ
 	
 	const ageRangeContainer = document.getElementById('ageRangeContainer');
 	if (minAgeRange === null || minAgeRange === undefined || maxAgeRange === null || maxAgeRange === undefined) {
-        ageRangeContainer.innerHTML = '-';
-    } else {
+		ageRangeContainer.innerHTML = '-';
+	} else {
 		if (minAgeRange === maxAgeRange) {
 			ageRangeContainer.innerHTML = minAgeRange;
 		} else {
@@ -53,9 +91,9 @@ function displayHome(averageSalary, averageAge, minAgeRange, maxAgeRange, employ
 		birthDateCell.className = 'text-center';
 		const date = new Date(employee.birthDate);
 		const formattedDate = date.toLocaleDateString('en-US', {
-		    year: 'numeric',
-		    month: 'long',
-		    day: 'numeric'
+				year: 'numeric',
+				month: 'long',
+				day: 'numeric'
 		});
 		birthDateCell.textContent = formattedDate;
 		row.appendChild(birthDateCell);
@@ -82,7 +120,7 @@ function displayHome(averageSalary, averageAge, minAgeRange, maxAgeRange, employ
 		detailsButton.id = 'detailsButton' + employee.id;
 		detailsButton.textContent = 'Details';
 		detailsButton.onclick = async () => {
-		  openViewModal(employee);
+			openViewModal(employee);
 		};
 		actionsCellWrapper.appendChild(detailsButton);
 		actionsCell.appendChild(actionsCellWrapper);
@@ -137,8 +175,8 @@ async function fetchEmployeeId() {
 	const employeeId = document.getElementById('searchIdInput').value;
 	if (employeeId === '') {
 		showErrorAlert('Invalid action. Can\'t search an empty employee ID.', 3000);
-        return;
-    }
+			return;
+		}
 	
 	const searchNameInput = document.getElementById('searchNameInput');
 	searchNameInput.innerHTML = '';
@@ -163,8 +201,8 @@ async function fetchEmployeeId() {
 		
 		displayHome(result.averageSalary, result.averageAge, result.minAgeRange, result.maxAgeRange, result.employees);
 	} catch (error) {
-        console.error('Error fetching employee by ID: ', error);
-    }
+		console.error('Error fetching employee by ID: ', error);
+	}
 }
 
 async function applyFilters() {
@@ -186,7 +224,7 @@ async function applyFilters() {
 			console.log(departmentResult);
 			departmentId = departmentResult.departmentId;
 		} catch (error) {
-		    console.error('Error fetching department ID: ', error);
+			console.error('Error fetching department ID: ', error);
 		}
 	}
 	
