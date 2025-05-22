@@ -10,6 +10,9 @@ window.onload = () => {
 };
 
 function displayHome(averageSalary, averageAge, employees) {
+	const noOfEmployeesContainer = document.getElementById('noOfEmployeesContainer');
+	noOfEmployeesContainer.innerHTML = employees.length;
+	
 	const averageSalaryContainer = document.getElementById('averageSalaryContainer');
 	averageSalaryContainer.innerHTML = Number(averageSalary).toLocaleString('en-US', {
 		style: 'currency',
