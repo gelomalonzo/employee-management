@@ -111,30 +111,32 @@
 			</div></div>
 			
 			<div class="row"> 
-				<div id="employeeTableWrapper" class="table-responsive" style="max-height: 55vh; overflow-y: auto;">
-					<table id="employeeTable" class="table table-sm table-hover align-middle">
-						<colgroup>
-							<col style="width: 10%;"> <!-- employee ID -->
-							<col style="width: 30%;"> <!-- name -->
-							<col style="width: 15%;"> <!-- date of birth -->
-							<col style="width: 20%;"> <!-- department -->
-							<col style="width: 15%;"> <!-- salary -->
-							<col style="width: 10%;"> <!-- actions button -->
-						</colgroup>
-						
-						<thead class="table-secondary">
-							<tr>
-								<th class="text-center align-middle">Employee ID</th>
-								<th class="text-center align-middle">Name</th>
-								<th class="text-center align-middle">Date of Birth</th>
-								<th class="text-center align-middle">Department</th>
-								<th class="text-center align-middle">Salary</th>
-								<th class="text-center align-middle"></th>
-							</tr>
-						</thead>
-						<tbody id="employeeTableBody"></tbody> <!-- filled out in home.js -->
-					</table> <!-- table end -->
-				</div> <!-- table wrapper end -->
+				<div class="table-responsive">
+					<div id="employeeTableWrapper" style="max-height: 55vh; overflow-y: auto;">
+						<table id="employeeTable" class="table table-sm table-hover align-middle">
+							<colgroup>
+								<col style="width: 10%;"> <!-- employee ID -->
+								<col style="width: 30%;"> <!-- name -->
+								<col style="width: 15%;"> <!-- date of birth -->
+								<col style="width: 20%;"> <!-- department -->
+								<col style="width: 15%;"> <!-- salary -->
+								<col style="width: 10%;"> <!-- actions button -->
+							</colgroup>
+							
+							<thead class="table-secondary" style="position: sticky; top: 0; z-index: 1;">
+								<tr>
+									<th class="text-center align-middle">Employee ID</th>
+									<th class="text-center align-middle">Name</th>
+									<th class="text-center align-middle">Date of Birth</th>
+									<th class="text-center align-middle">Department</th>
+									<th class="text-center align-middle">Salary</th>
+									<th class="text-center align-middle"></th>
+								</tr>
+							</thead>
+							<tbody id="employeeTableBody"></tbody> <!-- filled out in home.js -->
+						</table> <!-- table end -->
+					</div> <!-- table wrapper end -->
+				</div>
 			</div> 
 		</div> <!-- MAIN CONTENT END -->
 	</div>	
