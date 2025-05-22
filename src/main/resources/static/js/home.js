@@ -24,7 +24,11 @@ function displayHome(averageSalary, averageAge, minAgeRange, maxAgeRange, employ
 	if (minAgeRange === null || minAgeRange === undefined || maxAgeRange === null || maxAgeRange === undefined) {
         ageRangeContainer.innerHTML = '-';
     } else {
-		ageRangeContainer.innerHTML = minAgeRange + ' - ' + maxAgeRange;
+		if (minAgeRange === maxAgeRange) {
+			ageRangeContainer.innerHTML = minAgeRange;
+		} else {
+			ageRangeContainer.innerHTML = minAgeRange + ' - ' + maxAgeRange;
+		}
 	}
 	
 	const averageAgeContainer = document.getElementById('averageAgeContainer');
@@ -130,7 +134,7 @@ async function fetchAllEmployees() {
 }
 
 async function fetchEmployeeId() {
-	const employeeId = document.getElementById('searchIDInput').value;
+	const employeeId = document.getElementById('searchIdInput').value;
 	if (employeeId === '') {
 		showErrorAlert('Invalid action. Can\'t search an empty employee ID.', 3000);
         return;
@@ -157,15 +161,15 @@ async function fetchEmployeeId() {
 		const response = await fetch(`/employees/${employeeId}`);
 		const result = await response.json();
 		
-		displayHome(result.averageSalary, result.averageAge, result.minAgeRange, result.maxAgeRange, result.employee);
+		displayHome(result.averageSalary, result.averageAge, result.minAgeRange, result.maxAgeRange, result.employees);
 	} catch (error) {
         console.error('Error fetching employee by ID: ', error);
     }
 }
 
 async function applyFilters() {
-	const searchIDInput = document.getElementById('searchIDInput');
-	searchIDInput.value = '';
+	const searchIdInput = document.getElementById('searchIdInput');
+	searchIdInput.value = '';
 	
 	const employeeName = document.getElementById('searchNameInput').value;
 	const departmentName = document.getElementById('departmentSelect').value;
@@ -206,8 +210,8 @@ async function applyFilters() {
 }
 
 async function resetFilters() {
-	const searchIDInput = document.getElementById('searchIDInput');
-	searchIDInput.innerHTML = '';
+	const searchIdInput = document.getElementById('searchIdInput');
+	searchIdInput.value = '';
 	
 	const searchNameInput = document.getElementById('searchNameInput');
 	searchNameInput.value = '';
@@ -218,7 +222,7 @@ async function resetFilters() {
 	defaultDepartmentOption.value = '';
 	defaultDepartmentOption.textContent = 'ALL DEPARTMENTS';
 	departmentSelect.appendChild(defaultDepartmentOption);
-	fetchDepartments();
+	fetchDepartments('departmentSelect');
 	
 	const minAgeInput = document.getElementById('minAgeInput');
 	minAgeInput.value = '';

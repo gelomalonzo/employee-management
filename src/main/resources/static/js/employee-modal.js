@@ -1,4 +1,5 @@
 let currentEmployee = null;
+let deleteConfirmModal = null;
 
 async function loadModal(containerId) {
 	const response = await fetch('/component/employee-modal.html');
@@ -9,14 +10,50 @@ async function loadModal(containerId) {
 	if (modalElement) {
 		bootstrapModal = new bootstrap.Modal(modalElement);
 	}
+	
+	const deleteModalElement = document.getElementById('deleteConfirmModal');
+	if (deleteModalElement) {
+        deleteConfirmModal = new bootstrap.Modal(deleteModalElement);
+    }
+	
+	const deleteConfirmButton = document.getElementById('deleteConfirmButton');
+	if (deleteConfirmButton) {
+        deleteConfirmButton.addEventListener('click', async () => {
+            if (!currentEmployee) {
+				return;
+			}
+			
+			try {
+				const response = await fetch(`/employees/${currentEmployee.id}/delete`, { method: 'DELETE' });
+				const result = await response.json();
+
+				if (response.ok && result.success) {
+					showSuccessAlert('Successfully deleted ' + currentEmployee.name + ' from the employee records.');
+					deleteConfirmModal.hide();
+					closeModal();
+					applyFilters();
+				}
+			} catch (error) {
+				showErrorAlert('Error deleting employee.');
+				console.error('Error deleting employee: ', error);
+			}
+        });
+    }
 }
 
 function openModal(title) {
 	if (!currentEmployee) {
-		console.log('Adding new employee...');
 		document.getElementById('idModalInput').value = 'Auto';
 		document.getElementById('nameModalInput').value = '';
-		document.getElementById('birthDateModalInput').value = '';
+		
+		const birthDateModalInput = document.getElementById('birthDateModalInput');
+		const today = new Date();
+		const minDate = new Date(today.getFullYear() - 100, today.getMonth(), today.getDate()).toISOString().split('T')[0];
+		const maxDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate()).toISOString().split('T')[0];
+		const formatDate = (date) => date.toISOString().split('T')[0];
+		birthDateModalInput.setAttribute('min', minDate);
+		birthDateModalInput.setAttribute('max', maxDate);
+		
 		document.getElementById('ageModalInput').value = '';
 		document.getElementById('salaryModalInput').value = '';
 		
@@ -38,7 +75,11 @@ function openModal(title) {
 	document.getElementById('birthDateModalInput').value = new Date(currentEmployee.birthDate).toISOString().split('T')[0];
 	document.getElementById('ageModalInput').value = '';
 	document.getElementById('ageModalInput').value = currentEmployee.age ?? 'N/A';
-	document.getElementById('salaryModalInput').value = `${Number(currentEmployee.salary).toLocaleString()}`;
+	document.getElementById('salaryModalInput').value = Number(currentEmployee.salary).toLocaleString('en-PH', {
+		style: 'currency',
+		currency: 'PHP',
+		minimumFractionDigits: 2
+	}).replace('PHP', '₱');
 	
 	
 	const departmentModalSelect = document.getElementById('departmentModalSelect');
@@ -56,10 +97,10 @@ function openModal(title) {
 }
 
 function setFormEditable(isEditing) {
-	document.getElementById('nameModalInput').readOnly = !isEditing;
-	document.getElementById('birthDateModalInput').readOnly = !isEditing;
+	document.getElementById('nameModalInput').disabled = !isEditing;
+	document.getElementById('birthDateModalInput').disabled = !isEditing;
 	document.getElementById('departmentModalSelect').disabled = !isEditing;
-	document.getElementById('salaryModalInput').readOnly = !isEditing;
+	document.getElementById('salaryModalInput').disabled = !isEditing;
 	
 	renderActionButtons(isEditing);
 }
@@ -77,10 +118,16 @@ function openEditModal(title) {
 	openModal(title, employee);
 }
 
+function openAddModal(title) {
+	setFormEditable(true);
+    currentEmployee = null;
+    openModal(title);
+}
+
 async function saveChanges() {	
 	const name = document.getElementById('nameModalInput').value;
 	const birthDateStr = document.getElementById('birthDateModalInput').value;
-	const salaryStr = document.getElementById('salaryModalInput').value.replace(/[,]/g, '');
+	const salaryStr = document.getElementById('salaryModalInput').value.replace(/[₱,]/g, '');
 	const departmentName = document.getElementById('departmentModalSelect').value;
 	let departmentId = null;
 	
@@ -94,11 +141,17 @@ async function saveChanges() {
 		console.error('Error fetching department ID.', error);
 	}
 
-	// Convert birthDate to ISO format
 	const birthDate = new Date(birthDateStr);
 	if (isNaN(birthDate)) {
+		showErrorAlert('Invalid birth date format.');
 		console.error("Invalid birth date format.");
 		return;
+	}
+	
+	if (calculateAge(birthDate) < 18 || calculateAge(birthDate) > 100) {
+		showErrorAlert('Invalid age. Employee must be at least 18 years old and not older than 100 years old.', 5000);
+        console.error("Invalid age.");
+        return;
 	}
 	
 	const formParams = new URLSearchParams();
@@ -154,25 +207,22 @@ async function saveChanges() {
 }
 
 function cancelEdit() {
-	console.log("Discarding changes...");
-	openViewModal(currentEmployee);
+	if (currentEmployee) {
+		openViewModal(currentEmployee);
+	} else {
+		closeModal();
+	}
 }
 
-async function deleteEmployee() {
+function deleteEmployee() {
 	if (!currentEmployee) {
 		return;
 	}
 	
-	try {
-		const response = await fetch(`/employees/${currentEmployee.id}/delete`, {method: 'DELETE'});
-		const result = await response.json();
-		
-		if (response.ok && result.success) {
-			showSuccessAlert('Successfully deleted employee.');
-			window.location.href = result.redirect;
-		}
-	} catch (error) {
-		console.error('Error deleting employee: ', error);
+	document.getElementById('employeeNameToDelete').textContent = currentEmployee.name;
+
+	if (deleteConfirmModal) {
+		deleteConfirmModal.show();
 	}
 }
 
@@ -182,6 +232,8 @@ function closeModal() {
 	if (bootstrapModal) {
 		bootstrapModal.hide();
 	}
+	
+	currentEmployee = null;
 }
 
 function renderActionButtons(isEditing) {
@@ -191,26 +243,45 @@ function renderActionButtons(isEditing) {
 	if (isEditing) {
 		const cancelButton = document.createElement('button');
 		cancelButton.className = 'btn btn-secondary';
+		cancelButton.style = 'width: 15%;';
 		cancelButton.textContent = 'Cancel';
 		cancelButton.onclick = () => cancelEdit();
 		buttonContainer.appendChild(cancelButton);
 
 		const saveButton = document.createElement('button');
 		saveButton.className = 'btn btn-success';
+		saveButton.style = 'width: 15%;';
 		saveButton.textContent = 'Save';
 		saveButton.onclick = () => saveChanges();
 		buttonContainer.appendChild(saveButton);
 	} else {
-		const editButton = document.createElement('button');
-		editButton.className = 'btn btn-primary';
-		editButton.textContent = 'Edit';
-		editButton.onclick = () => openEditModal('Employee Details');
-		buttonContainer.appendChild(editButton);
-
 		const deleteButton = document.createElement('button');
-		deleteButton.className = 'btn btn-danger';	// btn-error is not Bootstrap standard, use btn-danger
+		deleteButton.className = 'btn btn-danger';
+		deleteButton.style = 'width: 15%;';
 		deleteButton.textContent = 'Delete';
 		deleteButton.onclick = () => deleteEmployee();
 		buttonContainer.appendChild(deleteButton);
+		
+		const editButton = document.createElement('button');
+		editButton.className = 'btn btn-primary';
+		editButton.style = 'width: 15%;';
+		editButton.textContent = 'Edit';
+		editButton.onclick = () => openEditModal('Edit Employee Details');
+		buttonContainer.appendChild(editButton);
 	}
+}
+
+function calculateAge(birthDate) {
+	const today = new Date();
+	let age = today.getFullYear() - birthDate.getFullYear();
+
+	const hasHadBirthdayThisYear =
+		today.getMonth() > birthDate.getMonth() ||
+		(today.getMonth() === birthDate.getMonth() && today.getDate() >= birthDate.getDate());
+
+	if (!hasHadBirthdayThisYear) {
+		age--;
+	}
+
+	return age;
 }
