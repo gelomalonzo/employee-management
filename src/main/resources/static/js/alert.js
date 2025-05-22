@@ -16,10 +16,10 @@ function showSuccessAlert(message, duration = 3000) {
 	}, duration);
 }
 
-function showErrorAlert(message, duration = 0) {
+async function showErrorAlert(message, duration = 3000) {
 	const alert = document.getElementById('errorAlert');
-	if (!alert) return;
-
+	//if (!alert) return;
+	console.log('ERROR ALERT');
 	alert.querySelector('.alert-message').textContent = message;
 	alert.classList.remove('d-none');
 

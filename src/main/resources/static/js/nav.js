@@ -4,6 +4,11 @@ async function loadNavbar(containerId) {
 	document.getElementById(containerId).innerHTML = html;
 	
 	if (window.location.pathname === '/login') {
+		const homeButton = document.getElementById('homeButton');
+		if (homeButton) {
+			homeButton.style.display = 'none';
+		}
+		
 		const logoutButton = document.getElementById('logoutButton');
 		if (logoutButton) {
 			logoutButton.style.display = 'none';

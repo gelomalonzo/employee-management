@@ -5,6 +5,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.capstone.employeemanagement.model.Department;
 import com.capstone.employeemanagement.model.Employee;
 import com.capstone.employeemanagement.service.EmployeeServiceImpl;
+
+import jakarta.servlet.http.HttpSession;
+
 import com.capstone.employeemanagement.service.DepartmentServiceImpl;
 
 import java.math.BigDecimal;
@@ -71,11 +74,21 @@ public class EmployeeController {
 		
 		BigDecimal averageSalary = new BigDecimal(0);
 		Integer averageAge = 0;
+		Integer minAgeRange = null;
+		Integer maxAgeRange = null;
 		
 		if (!employees.isEmpty()) {
 			for (Employee employee : employees) {
 				averageSalary = averageSalary.add(employee.getSalary());
 				averageAge += employee.getAge();
+				
+				if (minAgeRange == null || employee.getAge() < minAgeRange) {
+					minAgeRange = employee.getAge();
+				}
+				
+				if (maxAgeRange == null || employee.getAge() > maxAgeRange) {
+					maxAgeRange = employee.getAge();
+				}
 			}
 			
 			averageSalary = averageSalary.divide(new BigDecimal(employees.size()), 2, RoundingMode.HALF_UP);
@@ -84,6 +97,8 @@ public class EmployeeController {
 		
 		averages.put("averageSalary", averageSalary);
 		averages.put("averageAge", averageAge);
+		averages.put("minAgeRange", minAgeRange);
+		averages.put("maxAgeRange", maxAgeRange);
 		
 		return averages;
 	}
@@ -97,6 +112,8 @@ public class EmployeeController {
 		response.put("isEmpty", employees.isEmpty());
 		response.put("averageSalary", averages.get("averageSalary"));
 		response.put("averageAge", averages.get("averageAge"));
+		response.put("minAgeRange", averages.get("minAgeRange"));
+		response.put("maxAgeRange", averages.get("maxAgeRange"));
 		
 		if (employees.isEmpty()) {
 			response.put("message", "No employees found.");

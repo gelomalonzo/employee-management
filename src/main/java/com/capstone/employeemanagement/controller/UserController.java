@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.capstone.employeemanagement.model.User;
 import com.capstone.employeemanagement.service.UserServiceImpl;
 
+import jakarta.servlet.http.HttpSession;
+
 @RestController
 public class UserController {
 	
@@ -25,7 +27,8 @@ public class UserController {
 	@PostMapping("/login")
 	public ResponseEntity<?> login(
 		@RequestParam(name = "username", required = true) String username,
-		@RequestParam(name = "password", required = true) String password
+		@RequestParam(name = "password", required = true) String password,
+		HttpSession session
 	) {
 		Map<String, Object> response = new HashMap<>();
 		
@@ -42,11 +45,11 @@ public class UserController {
 		if (!userService.passwordMatches(user, password)) {
 			response.put("success", false);
 			response.put("message", "Invalid credentials: Incorrect password.");
-//			response.put("redirect", "/login");
 			
 			return ResponseEntity.badRequest().body(response);
 		}
 		
+		session.setAttribute("user", user);
 		response.put("success", true);
 		response.put("message", "Successfully logged in.");
 		response.put("redirect", "/home");
