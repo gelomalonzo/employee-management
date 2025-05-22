@@ -1,11 +1,9 @@
-// Load alert.html into a container on your page
 async function loadAlerts(containerId) {
 	const response = await fetch('/component/alert.html');
 	const html = await response.text();
 	document.getElementById(containerId).innerHTML = html;
 }
 
-// Show success alert with message
 function showSuccessAlert(message, duration = 3000) {
 	const alert = document.getElementById('successAlert');
 	if (!alert) return;
@@ -18,7 +16,6 @@ function showSuccessAlert(message, duration = 3000) {
 	}, duration);
 }
 
-// Show error alert with message
 function showErrorAlert(message, duration = 0) {
 	const alert = document.getElementById('errorAlert');
 	if (!alert) return;
@@ -31,7 +28,6 @@ function showErrorAlert(message, duration = 0) {
 	}, duration);
 }
 
-// Show warning alert with message
 function showWarningAlert(message) {
 	const alert = document.getElementById('warningAlert');
 	if (!alert) return;
@@ -40,7 +36,6 @@ function showWarningAlert(message) {
 	alert.classList.remove('d-none');
 }
 
-// Hide all alerts
 function hideAlerts() {
 	const successAlert = document.getElementById('successAlert');
 	const errorAlert = document.getElementById('errorAlert');

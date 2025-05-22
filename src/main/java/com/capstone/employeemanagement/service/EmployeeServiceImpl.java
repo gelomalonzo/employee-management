@@ -62,7 +62,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 	
 	@Override
 	public List<Employee> getEmployeesByName(String name) {
-		return employeeRepo.findByNameContainingIgnoreCaseOrderByNameAsc(name);
+		return employeeRepo.findByNameContainingIgnoreCaseOrderByIdAsc(name);
 	}
 	
 	@Override
@@ -79,7 +79,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 	public List<Employee> getEmployeesByAge(Integer minAge, Integer maxAge) {
 		ArrayList<LocalDate> birthDateRange = getBirthDateRange(minAge, maxAge);
 		
-		return employeeRepo.findByBirthDateBetweenOrderByBirthDateAsc(birthDateRange.get(0), birthDateRange.get(1));
+		return employeeRepo.findByBirthDateBetweenOrderByIdAsc(birthDateRange.get(0), birthDateRange.get(1));
 	}
 	
 	@Override
@@ -89,14 +89,14 @@ public class EmployeeServiceImpl implements EmployeeService {
 			return null;
 		}
 		
-		return employeeRepo.findByNameContainingIgnoreCaseAndDepartmentOrderByNameAsc(name, department);
+		return employeeRepo.findByNameContainingIgnoreCaseAndDepartmentOrderByIdAsc(name, department);
 	}
 	
 	@Override
 	public List<Employee> getEmployeesByNameAndAge(String name, Integer minAge, Integer maxAge) {
 		ArrayList<LocalDate> birthDateRange = getBirthDateRange(minAge, maxAge);
 		
-		return employeeRepo.findByNameContainingIgnoreCaseAndBirthDateBetweenOrderByNameAsc(name, birthDateRange.get(0), birthDateRange.get(1));
+		return employeeRepo.findByNameContainingIgnoreCaseAndBirthDateBetweenOrderByIdAsc(name, birthDateRange.get(0), birthDateRange.get(1));
 	}
 	
 	@Override
@@ -108,7 +108,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 		
 		ArrayList<LocalDate> birthDateRange = getBirthDateRange(minAge, maxAge);
 		
-		return employeeRepo.findByDepartmentAndBirthDateBetween(department, birthDateRange.get(0), birthDateRange.get(1));
+		return employeeRepo.findByDepartmentAndBirthDateBetweenOrderByIdAsc(department, birthDateRange.get(0), birthDateRange.get(1));
 	}
 	
 	@Override
@@ -120,7 +120,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 		
 		ArrayList<LocalDate> birthDateRange = getBirthDateRange(minAge, maxAge);
 		
-		return employeeRepo.findByNameContainingIgnoreCaseAndDepartmentAndBirthDateBetweenOrderByNameAsc(name, department, birthDateRange.get(0), birthDateRange.get(1));
+		return employeeRepo.findByNameContainingIgnoreCaseAndDepartmentAndBirthDateBetweenOrderByIdAsc(name, department, birthDateRange.get(0), birthDateRange.get(1));
 	}
 	
 	@Override

@@ -1,8 +1,11 @@
 loadNavbar('navContainer');
 loadAlerts('alertContainer');
+loadModal('modalContainer');
+
+let isEditing = false;
 
 window.onload = () => {
-	var departments = fetchDepartments();
+	var departments = fetchDepartments('departmentSelect');
 	var employees = fetchAllEmployees();
 };
 
@@ -60,14 +63,14 @@ function displayHome(averageSalary, averageAge, employees) {
 		const actionsCell = document.createElement('td');
 		const actionsCellWrapper = document.createElement('div');
 		actionsCellWrapper.className = 'd-flex justify-content-center align-items-center';
-		const viewButton = document.createElement('button');
-		viewButton.className = 'btn btn-sm btn-outline-secondary';
-		viewButton.id = 'viewButton' + employee.id;
-		viewButton.textContent = 'Details';
-		viewButton.onclick = () => {
-            window.location.href = `/employees/${employee.id}`;
-        };
-		actionsCellWrapper.appendChild(viewButton);
+		const detailsButton = document.createElement('button');
+		detailsButton.className = 'btn btn-sm btn-outline-secondary';
+		detailsButton.id = 'detailsButton' + employee.id;
+		detailsButton.textContent = 'Details';
+		detailsButton.onclick = async () => {
+		  openViewModal(employee);
+		};
+		actionsCellWrapper.appendChild(detailsButton);
 		actionsCell.appendChild(actionsCellWrapper);
 		row.appendChild(actionsCell);
 		
@@ -75,12 +78,24 @@ function displayHome(averageSalary, averageAge, employees) {
 	});
 }
 
-async function fetchDepartments() {
+async function fetchEmployeeDetails(employeeId) {
+	try {
+		const response = await fetch(`/employees/${employeeId}`);
+		const result = await response.json();
+		const employee = result.employees[0];
+		
+		displayEmployeeDetails(employee);
+	} catch (error) {
+		console.error('Error retrieving employee details: ', error);
+	}
+}
+
+async function fetchDepartments(containerId) {
 	try {
 		const response = await fetch('/departments/all');
 		const result = await response.json();
 		const departments = result.departments;
-		const departmentSelect = document.getElementById('departmentSelect');
+		const departmentSelect = document.getElementById(containerId);
 		
 		departments.forEach(department => {
 			const option = document.createElement('option');
@@ -123,7 +138,7 @@ async function fetchEmployeeId() {
 	defaultDepartmentOption.value = '';
 	defaultDepartmentOption.textContent = 'ALL DEPARTMENTS';
 	departmentSelect.appendChild(defaultDepartmentOption);
-	fetchDepartments();
+	fetchDepartments('departmentSelect');
 	
 	const minAgeInput = document.getElementById('minAgeInput');
 	minAgeInput.value = '';

@@ -228,6 +228,10 @@ public class EmployeeController {
 		
 		employee.setName(name);
 		employee.setBirthDate(birthDate);
+		employee.setSalary(salary);
+		employee.setDepartment(department);
+		
+		employeeService.saveEmployee(employee);
 		
 		response = generateResponseForSavedEmployee(employee);
 		
@@ -243,7 +247,7 @@ public class EmployeeController {
 		Map<String, Object> response = new HashMap<>();
 		response.put("success", true);
 		response.put("message", "Successfully deleted employee from the database.");
-		response.put("redirect", "/employees");
+		response.put("redirect", "/home");
 		
 		return ResponseEntity.ok(response);
 	}

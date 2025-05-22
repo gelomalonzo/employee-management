@@ -13,23 +13,23 @@ import com.capstone.employeemanagement.model.Employee;
 public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
 	
 	// filter by name
-	List<Employee> findByNameContainingIgnoreCaseOrderByNameAsc(String name);
+	List<Employee> findByNameContainingIgnoreCaseOrderByIdAsc(String name);
 	
 	// filter by department
 	List<Employee> findByDepartment(Department department);
 	
 	// filter by age (birth date)
-	List<Employee> findByBirthDateBetweenOrderByBirthDateAsc(LocalDate minDate, LocalDate maxDate);
+	List<Employee> findByBirthDateBetweenOrderByIdAsc(LocalDate minDate, LocalDate maxDate);
 	
 	// filter by name and department
-	List<Employee> findByNameContainingIgnoreCaseAndDepartmentOrderByNameAsc(String name, Department department);
+	List<Employee> findByNameContainingIgnoreCaseAndDepartmentOrderByIdAsc(String name, Department department);
 	
 	// filter by name and age (birth date)
-	List<Employee> findByNameContainingIgnoreCaseAndBirthDateBetweenOrderByNameAsc(String name, LocalDate minDate, LocalDate maxDate);
+	List<Employee> findByNameContainingIgnoreCaseAndBirthDateBetweenOrderByIdAsc(String name, LocalDate minDate, LocalDate maxDate);
 	
 	// filter by department and age (birth date)
-	List<Employee> findByDepartmentAndBirthDateBetween(Department department, LocalDate minDate, LocalDate maxDate);
+	List<Employee> findByDepartmentAndBirthDateBetweenOrderByIdAsc(Department department, LocalDate minDate, LocalDate maxDate);
 	
 	// filter by name, department, and age (birth date)
-	List<Employee> findByNameContainingIgnoreCaseAndDepartmentAndBirthDateBetweenOrderByNameAsc(String name, Department department, LocalDate minDate, LocalDate maxDate);
+	List<Employee> findByNameContainingIgnoreCaseAndDepartmentAndBirthDateBetweenOrderByIdAsc(String name, Department department, LocalDate minDate, LocalDate maxDate);
 }
