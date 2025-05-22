@@ -187,16 +187,23 @@ async function applyFilters() {
 async function resetFilters() {
 	const searchIDInput = document.getElementById('searchIDInput');
 	searchIDInput.innerHTML = '';
+	
 	const searchNameInput = document.getElementById('searchNameInput');
-	searchNameInput.innerHTML = '';
+	searchNameInput.value = '';
+	
 	const departmentSelect = document.getElementById('departmentSelect');
-	departmentSelect.value = '';
-	departmentSelect.textContent = 'ALL DEPARTMENTS';
+	departmentSelect.innerHTML = '';
+	const defaultDepartmentOption = document.createElement('option');
+	defaultDepartmentOption.value = '';
+	defaultDepartmentOption.textContent = 'ALL DEPARTMENTS';
+	departmentSelect.appendChild(defaultDepartmentOption);
+	fetchDepartments();
+	
 	const minAgeInput = document.getElementById('minAgeInput');
 	minAgeInput.value = '';
+	
 	const maxAgeInput = document.getElementById('maxAgeInput');
 	maxAgeInput.value = '';
 	
-	fetchDepartments();
 	fetchAllEmployees();
 }
