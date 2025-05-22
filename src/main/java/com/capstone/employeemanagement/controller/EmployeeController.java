@@ -8,6 +8,7 @@ import com.capstone.employeemanagement.service.EmployeeServiceImpl;
 import com.capstone.employeemanagement.service.DepartmentServiceImpl;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -65,12 +66,37 @@ public class EmployeeController {
 		return employees;
 	}
 	
-	private Map<String, Object> generateResponseForEmployeeList(List<Employee> employees) {
-		Map<String, Object> response = new HashMap<>();
+	private Map<String, Object> getAverages(List<Employee> employees) {
+		Map<String, Object> averages = new HashMap<>();
 		
-		response.put("employees", employees);
+		BigDecimal averageSalary = new BigDecimal(0);
+		Integer averageAge = 0;
+		
+		if (!employees.isEmpty()) {
+			for (Employee employee : employees) {
+				averageSalary = averageSalary.add(employee.getSalary());
+				averageAge += employee.getAge();
+			}
+			
+			averageSalary = averageSalary.divide(new BigDecimal(employees.size()), 2, RoundingMode.HALF_UP);
+			averageAge = averageAge / employees.size();
+		}
+		
+		averages.put("averageSalary", averageSalary);
+		averages.put("averageAge", averageAge);
+		
+		return averages;
+	}
+	
+	private Map<String, Object> generateResponseForEmployeeList(List<Employee> employees) {
+		Map<String, Object> averages = getAverages(employees);
+		
+		Map<String, Object> response = new HashMap<>();
 		response.put("success", true);
+		response.put("employees", employees);
 		response.put("isEmpty", employees.isEmpty());
+		response.put("averageSalary", averages.get("averageSalary"));
+		response.put("averageAge", averages.get("averageAge"));
 		
 		if (employees.isEmpty()) {
 			response.put("message", "No employees found.");
@@ -127,54 +153,6 @@ public class EmployeeController {
 		
 		Map<String, Object> response = generateResponseForEmployeeList(employees);
 		
-		return ResponseEntity.ok(response);
-	}
-	
-	@GetMapping("/employees/averageSalary")
-	public ResponseEntity<?> getAverageSalary(
-		@RequestParam(name = "name", required = false) String name,
-		@RequestParam(name = "departmentId", required = false) Integer departmentId,
-		@RequestParam(name = "minAge", required = false, defaultValue = "0") Integer minAge,
-		@RequestParam(name = "maxAge", required = false, defaultValue = "100") Integer maxAge
-	) {
-		List<Employee> employees = getFilteredEmployees(name, departmentId, minAge, maxAge);
-		BigDecimal averageSalary = new BigDecimal(0);
-		
-		for (Employee employee : employees) {
-			averageSalary = averageSalary.add(employee.getSalary());
-		}
-		
-		averageSalary = averageSalary.divide(new BigDecimal(employees.size()));
-		
-		Map<String, Object> response = new HashMap<>();
-		response.put("success", true);
-		response.put("averageSalary", averageSalary);
-		response.put("message", "Successfully calculated average salary of employees.");
-		
-		return ResponseEntity.ok(response);
-	}
-	
-	@GetMapping("/employees/averageAge")
-	public ResponseEntity<?> getAverageAge(
-		@RequestParam(name = "name", required = false) String name,
-		@RequestParam(name = "departmentId", required = false) Integer departmentId,
-		@RequestParam(name = "minAge", required = false, defaultValue = "0") Integer minAge,
-		@RequestParam(name = "maxAge", required = false, defaultValue = "100") Integer maxAge
-	) {
-		List<Employee> employees = getFilteredEmployees(name, departmentId, minAge, maxAge);
-		int averageAge = 0;
-		
-		for (Employee employee : employees) {
-			averageAge += employee.getAge();
-		}
-		
-		averageAge = averageAge / employees.size();
-		
-		Map<String, Object> response = new HashMap<>();
-		response.put("success", true);
-		response.put("averageAge", averageAge);
-		response.put("message", "Successfully calculated average age of employees.");
-			
 		return ResponseEntity.ok(response);
 	}
 	
