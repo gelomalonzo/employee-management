@@ -1,5 +1,6 @@
 package com.capstone.employeemanagement.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,22 @@ public class DepartmentServiceImpl implements DepartmentService {
 		}
 		
 		return departmentOptional.get();
+	}
+
+	@Override
+	public List<Department> getAllDepartments() {
+		return departmentRepo.findAll();
+	}
+
+	@Override
+	public Integer getDepartmentIdByName(String departmentName) {
+		Optional<Department> department = departmentRepo.findByNameIgnoreCase(departmentName);
+		
+		if (department.isPresent()) {
+			return department.get().getId();
+		}
+		
+		return null;
 	}
 
 }
