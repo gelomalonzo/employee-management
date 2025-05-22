@@ -257,14 +257,14 @@ function renderActionButtons(isEditing) {
 	} else {
 		const deleteButton = document.createElement('button');
 		deleteButton.className = 'btn btn-danger';
-		deleteButton.style = 'width: 15%;';
+		deleteButton.style = 'width: 20%;';
 		deleteButton.textContent = 'Delete';
 		deleteButton.onclick = () => deleteEmployee();
 		buttonContainer.appendChild(deleteButton);
 		
 		const editButton = document.createElement('button');
 		editButton.className = 'btn btn-primary';
-		editButton.style = 'width: 15%;';
+		editButton.style = 'width: 20%;';
 		editButton.textContent = 'Edit';
 		editButton.onclick = () => openEditModal('Edit Employee Details');
 		buttonContainer.appendChild(editButton);
