@@ -9,7 +9,7 @@ window.onload = () => {
 	var employees = fetchAllEmployees();
 };
 
-function displayHome(averageSalary, averageAge, employees) {
+function displayHome(averageSalary, averageAge, minAgeRange, maxAgeRange, employees) {
 	const noOfEmployeesContainer = document.getElementById('noOfEmployeesContainer');
 	noOfEmployeesContainer.innerHTML = employees.length;
 	
@@ -19,6 +19,13 @@ function displayHome(averageSalary, averageAge, employees) {
 		currency: 'PHP',
 		minimumFractionDigits: 2
 	});
+	
+	const ageRangeContainer = document.getElementById('ageRangeContainer');
+	if (minAgeRange === null || minAgeRange === undefined || maxAgeRange === null || maxAgeRange === undefined) {
+        ageRangeContainer.innerHTML = '-';
+    } else {
+		ageRangeContainer.innerHTML = minAgeRange + ' - ' + maxAgeRange;
+	}
 	
 	const averageAgeContainer = document.getElementById('averageAgeContainer');
 	averageAgeContainer.innerHTML = averageAge;
@@ -115,11 +122,8 @@ async function fetchAllEmployees() {
 	try {
 		const response = await fetch('/employees/all');
 		const result = await response.json();
-		const averageSalary = result.averageSalary;
-		const averageAge = result.averageAge;
-		const employees = result.employees;
 		
-		displayHome(averageSalary, averageAge, employees);
+		displayHome(result.averageSalary, result.averageAge, result.minAgeRange, result.maxAgeRange, result.employees);
 	} catch (error) {
 		console.error('Error fetching employees: ', error);
 	}
@@ -152,9 +156,8 @@ async function fetchEmployeeId() {
 	try {
 		const response = await fetch(`/employees/${employeeId}`);
 		const result = await response.json();
-		const employee = result.employees;
 		
-		displayHome(result.averageSalary, result.averageAge, employee);
+		displayHome(result.averageSalary, result.averageAge, result.minAgeRange, result.maxAgeRange, result.employee);
 	} catch (error) {
         console.error('Error fetching employee by ID: ', error);
     }
@@ -196,7 +199,7 @@ async function applyFilters() {
 		
 		console.log(result);
 		
-		displayHome(result.averageSalary, result.averageAge, result.employees);
+		displayHome(result.averageSalary, result.averageAge, result.minAgeRange, result.maxAgeRange, result.employees);
 	} catch (error) {
 		console.error('Error fetching filtered employee list: ', error);
 	}
