@@ -19,16 +19,16 @@ function showSuccessAlert(message, duration = 3000) {
 }
 
 // Show error alert with message
-function showErrorAlert(message, duration = 2500) {
+function showErrorAlert(message, duration = 0) {
 	const alert = document.getElementById('errorAlert');
 	if (!alert) return;
 
 	alert.querySelector('.alert-message').textContent = message;
 	alert.classList.remove('d-none');
 
-	//setTimeout(() => {
-	//	alert.classList.add('d-none');
-	//}, duration);
+	setTimeout(() => {
+		alert.classList.add('d-none');
+	}, duration);
 }
 
 // Show warning alert with message

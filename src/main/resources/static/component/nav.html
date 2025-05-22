@@ -1,4 +1,14 @@
-<nav class="navbar navbar-expand-lg navbar-secondary bg-secondary">
+<style>
+  .hover-bg:hover {
+    background-color: rgba(255, 255, 255, 0.2); /* light overlay on hover */
+  }
+
+  .active-page {
+    background-color: #0d6efd !important;
+  }
+</style>
+
+<nav class="navbar navbar-expand-lg navbar-secondary bg-dark">
 	<div class="container">
 		<a class="navbar-brand text-light" href="/home">Employee Management System</a>
 	</div>
@@ -8,14 +18,10 @@
 	</button>
 	
 	<div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-		<div class="navbar-nav">
-			<a id="addEmployeeButton" class="nav-item nav-link active text-info fw-semibold" href="/add">Add Employee</a>
-		</div>
-	</div>
-	
-	<div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-		<div class="navbar-nav">
-			<a id="logoutButton" class="nav-item nav-link active text-info fw-semibold" href="/logout">Logout</a>
+		<div class="navbar-nav ms-auto">
+			<a id="homeButton" class="nav-item nav-link text-light px-3 rounded hover-bg text-nowrap" href="/home">Home</a>
+			<a id="addEmployeeButton" class="nav-item nav-link active text-light px-3 rounded hover-bg text-nowrap" href="/add">Add Employee</a>
+			<a id="logoutButton" class="nav-item nav-link active text-light px-3 me-2 rounded hover-bg text-nowrap fw-semibold" href="/logout">Logout</a>
 		</div>
 	</div>
 </nav>

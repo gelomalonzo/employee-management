@@ -38,6 +38,7 @@ public abstract class Person {
 		this.birthDate = birthDate;
 	}
 	
+	@Transient
 	public int getAge() {
 		LocalDate today = LocalDate.now();
 		int age = today.getYear() - this.getBirthDate().getYear();

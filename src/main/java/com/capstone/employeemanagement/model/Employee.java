@@ -53,5 +53,10 @@ public class Employee extends Person {
 	public void setDepartment(Department department) {
 		this.department = department;
 	}
+	
+	@Transient
+	public String getFormattedId() {
+		return String.format("%05d", this.id);
+	}
 
 }
