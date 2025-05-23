@@ -14,23 +14,24 @@ public class SecurityConfig {
 		http
 			.csrf(csrf -> csrf.disable())
 			.authorizeHttpRequests(auth -> auth
-				.requestMatchers("/", "/login", "/login.html", "/login.js").permitAll() // login routes
+				.requestMatchers("/", "/login", "/login.html", "/login.js", "/component/login-success.html", "/component/logout-success.html", "/component/login-error.html").permitAll() // login routes
 				.requestMatchers("/component/nav.html", "/js/nav.js").permitAll() // navbar routes
 				.requestMatchers("/component/alert.html", "/js/alert.js").permitAll() // alert routes
 				.requestMatchers("/home", "/home.html", "/home.js").authenticated() // home routes
 				.requestMatchers("/employees/*", "/employees/*/edit", "/employees/*/delete").authenticated() // employee routes
 				.requestMatchers("/component/employee-modal.html", "/js/employee-modal.js").authenticated() // employee modal routes
 				.requestMatchers("/departments/*").authenticated() // department routes
-				.requestMatchers("/html/*", "/js/*").permitAll() // static routes
+				.requestMatchers("/html/*", "/js/*", "person-lines-fill.svg").permitAll() // static routes
 			)
 			.formLogin(form -> form
 				.loginPage("/login")
-				.defaultSuccessUrl("/login?success", true)
+				.defaultSuccessUrl("/home", true)
+				.failureUrl("/component/login-error.html")
 				.permitAll()
 			)
 			.logout(logout -> logout
 				.logoutUrl("/logout")
-				.logoutSuccessUrl("/login?logout")
+				.logoutSuccessUrl("/login")
 			);
 		
 		return http.build();

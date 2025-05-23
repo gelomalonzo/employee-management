@@ -31,7 +31,12 @@ public class DepartmentController {
 		
 		response.put("success", true);
 		response.put("departments", departments);
-		response.put("message", "Successfully retrieved departments list.");
+		
+		if (departments.isEmpty()) {
+			response.put("message", "Department list is empty.");
+		} else {
+			response.put("message", "Successfully retrieved departments list.");
+		}
 		
 		return ResponseEntity.ok(response);
 	}

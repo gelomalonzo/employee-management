@@ -9,6 +9,7 @@ window.onload = () => {
 	var employees = fetchAllEmployees();
 };
 
+// sorting table
 document.addEventListener("DOMContentLoaded", () => {
 	const table = document.getElementById("employeeTable");
 	const tbody = document.getElementById("employeeTableBody");
@@ -130,22 +131,16 @@ function displayHome(averageSalary, averageAge, minAgeRange, maxAgeRange, employ
 	});
 }
 
-async function fetchEmployeeDetails(employeeId) {
-	try {
-		const response = await fetch(`/employees/${employeeId}`);
-		const result = await response.json();
-		const employee = result.employees[0];
-		
-		displayEmployeeDetails(employee);
-	} catch (error) {
-		console.error('Error retrieving employee details: ', error);
-	}
-}
-
 async function fetchDepartments(containerId) {
 	try {
 		const response = await fetch('/departments/all');
 		const result = await response.json();
+		
+		if (result.isEmpty) {
+			showErrorAlert(result.message, 5000);
+			return;
+		}
+		
 		const departments = result.departments;
 		const departmentSelect = document.getElementById(containerId);
 		
@@ -165,6 +160,14 @@ async function fetchAllEmployees() {
 		const response = await fetch('/employees/all');
 		const result = await response.json();
 		
+		if (!result.success) {
+			showErrorAlert(result.message, 5000);
+		}
+
+		if (result.isEmpty) {
+			showWarningAlert(result.message, 4000);
+		}
+		
 		displayHome(result.averageSalary, result.averageAge, result.minAgeRange, result.maxAgeRange, result.employees);
 	} catch (error) {
 		console.error('Error fetching employees: ', error);
@@ -174,9 +177,9 @@ async function fetchAllEmployees() {
 async function fetchEmployeeId() {
 	const employeeId = document.getElementById('searchIdInput').value;
 	if (employeeId === '') {
-		showErrorAlert('Invalid action. Can\'t search an empty employee ID.', 3000);
-			return;
-		}
+		showErrorAlert('Invalid action. Can\'t search an empty employee ID.', 4000);
+		return;
+	}
 	
 	const searchNameInput = document.getElementById('searchNameInput');
 	searchNameInput.innerHTML = '';
@@ -198,6 +201,14 @@ async function fetchEmployeeId() {
 	try {
 		const response = await fetch(`/employees/${employeeId}`);
 		const result = await response.json();
+		
+		if (!result.success) {
+			showErrorAlert(result.message, 5000);
+		}
+
+		if (result.isEmpty) {
+			showWarningAlert(result.message, 4000);
+		}
 		
 		displayHome(result.averageSalary, result.averageAge, result.minAgeRange, result.maxAgeRange, result.employees);
 	} catch (error) {
@@ -239,7 +250,13 @@ async function applyFilters() {
 		const response = await fetch(`/employees/filter?${params.toString()}`);
 		const result = await response.json();
 		
-		console.log(result);
+		if (!result.success) {
+			showErrorAlert(result.message, 5000);
+		}
+		
+		if (result.isEmpty) {
+			showWarningAlert(result.message, 4000);
+		}
 		
 		displayHome(result.averageSalary, result.averageAge, result.minAgeRange, result.maxAgeRange, result.employees);
 	} catch (error) {

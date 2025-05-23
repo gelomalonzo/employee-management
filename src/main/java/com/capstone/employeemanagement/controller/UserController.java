@@ -51,7 +51,7 @@ public class UserController {
 		
 		session.setAttribute("user", user);
 		response.put("success", true);
-		response.put("message", "Successfully logged in.");
+		response.put("message", "Logged in successfully.");
 		response.put("redirect", "/home");
 		
 		return ResponseEntity.ok(response);

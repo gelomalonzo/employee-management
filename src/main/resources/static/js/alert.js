@@ -28,12 +28,16 @@ async function showErrorAlert(message, duration = 3000) {
 	}, duration);
 }
 
-function showWarningAlert(message) {
+function showWarningAlert(message, duration = 3000) {
 	const alert = document.getElementById('warningAlert');
 	if (!alert) return;
 	
 	alert.querySelector('.alert-message').textContent = message;
 	alert.classList.remove('d-none');
+	
+	setTimeout(() => {
+		alert.classList.add('d-none');
+	}, duration);
 }
 
 function hideAlerts() {

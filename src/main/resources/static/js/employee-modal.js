@@ -171,7 +171,7 @@ async function saveChanges() {
 			const result = await response.json();
 
 			if (result.success) {
-				showSuccessAlert(result.message);
+				showSuccessAlert(result.message, 4000);
 				currentEmployee = result.savedEmployee;
 			} else {
 				showErrorAlert(result.message);
