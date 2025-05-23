@@ -38,13 +38,13 @@ public class EmployeeController {
 	}
 	
 	private List<Employee> getFilteredEmployees(String name, Integer departmentId, Integer minAge, Integer maxAge) {
-		if (minAge != null && maxAge == null) { // if only minAge is given
-			maxAge = 100;
-		} else if (minAge == null && maxAge != null) { // if only maxAge is given
+		if (minAge == null) {
 			minAge = 18;
-		} // now, age variables are either both null or both not null only
+		}
 		
-		if (minAge != null && minAge == maxAge) { // if both minAge and maxAge are given, but they have the same value
+		if (maxAge == null) {
+			maxAge = 100;
+		} else {
 			maxAge++;
 		}
 		
