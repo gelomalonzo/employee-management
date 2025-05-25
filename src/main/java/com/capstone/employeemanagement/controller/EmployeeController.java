@@ -6,8 +6,6 @@ import com.capstone.employeemanagement.model.Department;
 import com.capstone.employeemanagement.model.Employee;
 import com.capstone.employeemanagement.service.EmployeeServiceImpl;
 
-import jakarta.servlet.http.HttpSession;
-
 import com.capstone.employeemanagement.service.DepartmentServiceImpl;
 
 import java.math.BigDecimal;
