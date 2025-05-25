@@ -44,6 +44,12 @@ document.addEventListener("DOMContentLoaded", () => {
 			});
 
 			rows.forEach(row => tbody.appendChild(row));
+			
+			table.querySelectorAll("th[data-sort]").forEach(header => {
+				header.innerHTML = header.textContent.trim();
+			});
+
+			th.innerHTML = `${th.textContent.trim()} <i class="bi ${direction === 'asc' ? 'bi-caret-up-fill' : 'bi-caret-down-fill'} ms-1"></i>`;
 		});
 	});
 });
