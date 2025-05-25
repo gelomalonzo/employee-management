@@ -175,9 +175,16 @@ async function fetchAllEmployees() {
 }
 
 async function fetchEmployeeId() {
-	const employeeId = document.getElementById('searchIdInput').value;
+	const searchIdInput = document.getElementById('searchIdInput')
+	const employeeId = searchIdInput.value;
 	if (employeeId === '') {
 		showErrorAlert('Invalid action. Can\'t search an empty employee ID.', 4000);
+		return;
+	}
+	
+	if (isNaN(employeeId) || parseInt(employeeId) <= 0) {
+		showErrorAlert('Invalid employee ID. Please enter a valid positive number.', 4000);
+		searchIdInput.value = '';
 		return;
 	}
 	

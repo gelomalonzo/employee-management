@@ -76,10 +76,8 @@ function openModal(title) {
 	document.getElementById('ageModalInput').value = '';
 	document.getElementById('ageModalInput').value = currentEmployee.age ?? 'N/A';
 	document.getElementById('salaryModalInput').value = Number(currentEmployee.salary).toLocaleString('en-PH', {
-		style: 'currency',
-		currency: 'PHP',
 		minimumFractionDigits: 2
-	}).replace('PHP', '₱');
+	});
 	
 	
 	const departmentModalSelect = document.getElementById('departmentModalSelect');
@@ -243,14 +241,14 @@ function renderActionButtons(isEditing) {
 	if (isEditing) {
 		const cancelButton = document.createElement('button');
 		cancelButton.className = 'btn btn-secondary';
-		cancelButton.style = 'width: 15%;';
+		cancelButton.style = 'width: 20%;';
 		cancelButton.textContent = 'Cancel';
 		cancelButton.onclick = () => cancelEdit();
 		buttonContainer.appendChild(cancelButton);
 
 		const saveButton = document.createElement('button');
 		saveButton.className = 'btn btn-success';
-		saveButton.style = 'width: 15%;';
+		saveButton.style = 'width: 20%;';
 		saveButton.textContent = 'Save';
 		saveButton.onclick = () => saveChanges();
 		buttonContainer.appendChild(saveButton);
