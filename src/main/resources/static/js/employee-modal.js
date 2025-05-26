@@ -59,6 +59,10 @@ function openModal(title) {
 		
 		const departmentModalSelect = document.getElementById('departmentModalSelect');
 		departmentModalSelect.innerHTML = '';
+		const currentDepartmentOption = document.createElement('option');
+		currentDepartmentOption.value = '';
+		currentDepartmentOption.textContent = currentEmployee.department.name;
+		departmentModalSelect.appendChild(currentDepartmentOption);
 		fetchDepartments('departmentModalSelect');
 
 		document.getElementById('modalTitle').innerText = title;
@@ -82,8 +86,11 @@ function openModal(title) {
 	
 	const departmentModalSelect = document.getElementById('departmentModalSelect');
 	departmentModalSelect.innerHTML = '';
+	const currentDepartmentOption = document.createElement('option');
+	currentDepartmentOption.value = '';
+	currentDepartmentOption.textContent = currentEmployee.department.name;
+	departmentModalSelect.appendChild(currentDepartmentOption);
 	fetchDepartments('departmentModalSelect');
-	departmentModalSelect.value = currentEmployee.department.name;
 
 	document.getElementById('modalTitle').innerText = title;
 
@@ -132,8 +139,7 @@ async function saveChanges() {
 	try {
 		const departmentResponse = await fetch(`/departments/getIdByName?departmentName=${encodeURIComponent(departmentName)}`);
 		const departmentResult = await departmentResponse.json();
-
-		console.log(departmentResult);
+		
 		departmentId = departmentResult.departmentId;
 	} catch (error) {
 		console.error('Error fetching department ID.', error);
@@ -158,6 +164,8 @@ async function saveChanges() {
 	formParams.append('salary', salaryStr);
 	formParams.append('departmentId', departmentId);
 	
+	console.log('Department ID: ' + departmentId);
+	
 	if (!currentEmployee) {
 		try {
 			const response = await fetch('/employees/add', {
@@ -171,6 +179,7 @@ async function saveChanges() {
 			if (result.success) {
 				showSuccessAlert(result.message, 4000);
 				currentEmployee = result.savedEmployee;
+				console.log('Saved Employee\'s Department ID: ' + currentEmployee.department.id);
 			} else {
 				showErrorAlert(result.message);
 			}
