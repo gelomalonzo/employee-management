@@ -12,8 +12,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.mockito.ArgumentMatchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.capstone.employeemanagement.model.Department;
@@ -57,10 +57,11 @@ class EmployeeControllerTest {
 
     @Test
     void testFilterEmployeesByName() throws Exception {
-        Employee employee = new Employee("Jake", LocalDate.of(1995, 8, 20), new BigDecimal("42000"), new Department());
+        Employee employee = new Employee("Jake", LocalDate.of(1995, 8, 20), new BigDecimal("42000"), new Department("HR"));
+        employee.setId(3);
         Mockito.when(employeeService.getEmployeesByName("Jake")).thenReturn(List.of(employee));
 
-        mockMvc.perform(get("/employees/filter?name=Jake&departmentId=&minAge=&maxAge="))
+        mockMvc.perform(get("/employees/filter").param("name", "Jake"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.employees[0].name").value("Jake"));
     }
@@ -72,7 +73,7 @@ class EmployeeControllerTest {
         Employee employee = new Employee("Anna", LocalDate.of(1992, 3, 3), new BigDecimal("60000"), department);
 
         Mockito.when(departmentService.getDepartmentById(1)).thenReturn(department);
-        Mockito.doNothing().when(employeeService).saveEmployee(any(Employee.class));
+        //Mockito.doNothing().when(employeeService).saveEmployee(any(Employee.class));
 
         mockMvc.perform(post("/employees/add")
                         .param("name", "Anna")
@@ -91,7 +92,7 @@ class EmployeeControllerTest {
 
         Mockito.when(departmentService.getDepartmentById(1)).thenReturn(department);
         Mockito.when(employeeService.getEmployeeById(1)).thenReturn(employee);
-        Mockito.doNothing().when(employeeService).saveEmployee(any(Employee.class));
+        //Mockito.doNothing().when(employeeService).saveEmployee(any(Employee.class));
 
         mockMvc.perform(post("/employees/1/edit")
                         .param("name", "Mark Updated")

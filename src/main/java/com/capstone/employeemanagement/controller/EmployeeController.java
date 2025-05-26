@@ -48,19 +48,19 @@ public class EmployeeController {
 		
 		List<Employee> employees = new ArrayList<>();
 		
-		if (name != null && departmentId != null && minAge != null) { // all are given
+		if (name != null && !name.isEmpty() && departmentId != null && minAge != null) { // all are given
 			employees = employeeService.getEmployeesByNameAndDepartmentAndAge(name, departmentId, minAge, maxAge);
-		} else if (name != null && departmentId != null && minAge == null) { // name and department are given
+		} else if (name != null && !name.isEmpty() && departmentId != null && minAge == null) { // name and department are given
 			employees = employeeService.getEmployeesByNameAndDepartment(name, departmentId);
-		} else if (name != null && departmentId == null && minAge != null) { // name and age are given
+		} else if (name != null && !name.isEmpty() && departmentId == null && minAge != null) { // name and age are given
 			employees = employeeService.getEmployeesByNameAndAge(name, minAge, maxAge);
-		} else if (name == null && departmentId != null && minAge != null) { // department and age are given
+		} else if ((name == null || name.isEmpty()) && departmentId != null && minAge != null) { // department and age are given
 			employees = employeeService.getEmployeesByDepartmentAndAge(departmentId, minAge, maxAge);
-		} else if (name != null && departmentId == null && minAge == null) { // name is given
+		} else if (name != null && !name.isEmpty() && departmentId == null && minAge == null) { // name is given
 			employees = employeeService.getEmployeesByName(name);
-		} else if (name == null && departmentId != null && minAge == null) { // department is given
+		} else if ((name == null || name.isEmpty()) && departmentId != null && minAge == null) { // department is given
 			employees = employeeService.getEmployeesByDepartment(departmentId);
-		} else if (name == null && departmentId == null && minAge != null) { // age is given
+		} else if ((name == null || name.isEmpty()) && departmentId == null && minAge != null) { // age is given
 			employees = employeeService.getEmployeesByAge(minAge, maxAge);
 		}
 		
