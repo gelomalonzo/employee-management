@@ -59,11 +59,12 @@ function openModal(title) {
 		
 		const departmentModalSelect = document.getElementById('departmentModalSelect');
 		departmentModalSelect.innerHTML = '';
-		const currentDepartmentOption = document.createElement('option');
-		currentDepartmentOption.value = '';
-		currentDepartmentOption.textContent = currentEmployee.department.name;
-		departmentModalSelect.appendChild(currentDepartmentOption);
-		fetchDepartments('departmentModalSelect');
+		//const currentDepartmentOption = document.createElement('option');
+		//currentDepartmentOption.value = '';
+		//currentDepartmentOption.textContent = 'Finance';
+		//departmentModalSelect.appendChild(currentDepartmentOption);
+		fetchDepartments('departmentModalSelect', 'Finance');
+		//departmentModalSelect.value = '';
 
 		document.getElementById('modalTitle').innerText = title;
 
@@ -86,11 +87,13 @@ function openModal(title) {
 	
 	const departmentModalSelect = document.getElementById('departmentModalSelect');
 	departmentModalSelect.innerHTML = '';
-	const currentDepartmentOption = document.createElement('option');
-	currentDepartmentOption.value = '';
-	currentDepartmentOption.textContent = currentEmployee.department.name;
-	departmentModalSelect.appendChild(currentDepartmentOption);
-	fetchDepartments('departmentModalSelect');
+	//const currentDepartmentOption = document.createElement('option');
+	//currentDepartmentOption.value = '';
+	//currentDepartmentOption.textContent = currentEmployee.department.name;
+	//departmentModalSelect.appendChild(currentDepartmentOption);
+	fetchDepartments('departmentModalSelect', currentEmployee.department.name);
+	departmentModalSelect.value = currentEmployee.department.name;
+	console.log('Current Employee\'s Department: ' + currentEmployee.department.name);
 
 	document.getElementById('modalTitle').innerText = title;
 

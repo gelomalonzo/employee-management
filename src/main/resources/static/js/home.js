@@ -5,7 +5,7 @@ loadModal('modalContainer');
 let isEditing = false;
 
 window.onload = () => {
-	var departments = fetchDepartments('departmentSelect');
+	var departments = fetchDepartments('departmentSelect', 'ALL DEPARTMENTS');
 	var employees = fetchAllEmployees();
 };
 
@@ -137,7 +137,9 @@ function displayHome(averageSalary, averageAge, minAgeRange, maxAgeRange, employ
 	});
 }
 
-async function fetchDepartments(containerId) {
+async function fetchDepartments(containerId, selectedValue) {
+	let hasSelected = false;
+	
 	try {
 		const response = await fetch('/departments/all');
 		const result = await response.json();
@@ -154,6 +156,12 @@ async function fetchDepartments(containerId) {
 			const option = document.createElement('option');
 			option.value = department.name;
 			option.textContent = department.name;
+			
+			if (department.name === selectedValue) {
+				option.selected = true;
+				hasSelected = true;
+			}
+			
 			departmentSelect.appendChild(option);
 		});
 	} catch (error) {
@@ -203,7 +211,7 @@ async function fetchEmployeeId() {
 	defaultDepartmentOption.value = '';
 	defaultDepartmentOption.textContent = 'ALL DEPARTMENTS';
 	departmentSelect.appendChild(defaultDepartmentOption);
-	fetchDepartments('departmentSelect');
+	fetchDepartments('departmentSelect', 'ALL DEPARTMENTS');
 	
 	const minAgeInput = document.getElementById('minAgeInput');
 	minAgeInput.value = '';
@@ -290,7 +298,7 @@ async function resetFilters() {
 	defaultDepartmentOption.value = '';
 	defaultDepartmentOption.textContent = 'ALL DEPARTMENTS';
 	departmentSelect.appendChild(defaultDepartmentOption);
-	fetchDepartments('departmentSelect');
+	fetchDepartments('departmentSelect', 'ALL DEPARTMENTS');
 	
 	const minAgeInput = document.getElementById('minAgeInput');
 	minAgeInput.value = '';
