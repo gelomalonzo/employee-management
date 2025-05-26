@@ -30,7 +30,7 @@ public class DataInitializer {
 	public CommandLineRunner seedDepartments(DepartmentRepository departmentRepo) {
 		return args -> {
 			ArrayList<String> departmentNames = new ArrayList<>();
-			departmentNames.addAll(Arrays.asList("Finance", "HR", "IT", "Marketing", "Operations"));
+			departmentNames.addAll(Arrays.asList("Finance", "HR", "IT", "Marketing", "Operations", "Facilities Management"));
 			
 			for (String departmentName : departmentNames) {
 				if (departmentRepo.findByNameIgnoreCase(departmentName).isEmpty()) {
