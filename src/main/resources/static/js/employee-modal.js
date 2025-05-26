@@ -59,12 +59,7 @@ function openModal(title) {
 		
 		const departmentModalSelect = document.getElementById('departmentModalSelect');
 		departmentModalSelect.innerHTML = '';
-		//const currentDepartmentOption = document.createElement('option');
-		//currentDepartmentOption.value = '';
-		//currentDepartmentOption.textContent = 'Finance';
-		//departmentModalSelect.appendChild(currentDepartmentOption);
-		fetchDepartments('departmentModalSelect', 'Finance');
-		//departmentModalSelect.value = '';
+		fetchDepartments('departmentModalSelect', '');
 
 		document.getElementById('modalTitle').innerText = title;
 
@@ -87,13 +82,7 @@ function openModal(title) {
 	
 	const departmentModalSelect = document.getElementById('departmentModalSelect');
 	departmentModalSelect.innerHTML = '';
-	//const currentDepartmentOption = document.createElement('option');
-	//currentDepartmentOption.value = '';
-	//currentDepartmentOption.textContent = currentEmployee.department.name;
-	//departmentModalSelect.appendChild(currentDepartmentOption);
 	fetchDepartments('departmentModalSelect', currentEmployee.department.name);
-	departmentModalSelect.value = currentEmployee.department.name;
-	console.log('Current Employee\'s Department: ' + currentEmployee.department.name);
 
 	document.getElementById('modalTitle').innerText = title;
 
@@ -116,7 +105,6 @@ function setFormEditable(isEditing) {
 function openViewModal(employee) {
 	setFormEditable(false);
 	currentEmployee = employee;
-	console.log('Current Employee in openViewModal(): ' + employee.id);
 	openModal('Employee Details');
 }
 
@@ -167,8 +155,6 @@ async function saveChanges() {
 	formParams.append('salary', salaryStr);
 	formParams.append('departmentId', departmentId);
 	
-	console.log('Department ID: ' + departmentId);
-	
 	if (!currentEmployee) {
 		try {
 			const response = await fetch('/employees/add', {
@@ -182,7 +168,6 @@ async function saveChanges() {
 			if (result.success) {
 				showSuccessAlert(result.message, 4000);
 				currentEmployee = result.savedEmployee;
-				console.log('Saved Employee\'s Department ID: ' + currentEmployee.department.id);
 			} else {
 				showErrorAlert(result.message);
 			}

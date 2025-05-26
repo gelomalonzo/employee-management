@@ -253,7 +253,6 @@ async function applyFilters() {
 			const departmentResponse = await fetch(`/departments/getIdByName?departmentName=${encodeURIComponent(departmentName)}`);
 			const departmentResult = await departmentResponse.json();
 			
-			console.log(departmentResult);
 			departmentId = departmentResult.departmentId;
 		} catch (error) {
 			console.error('Error fetching department ID: ', error);
