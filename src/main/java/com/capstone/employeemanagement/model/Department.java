@@ -1,5 +1,7 @@
 package com.capstone.employeemanagement.model;
 
+import java.util.List;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -12,6 +14,9 @@ public class Department {
 	
 	@Column(name = "NAME")
 	private String name;
+	
+	@OneToMany(mappedBy = "department", fetch = FetchType.LAZY)
+	private List<Employee> employees;
 	
 	public Department() {
 		
@@ -35,6 +40,14 @@ public class Department {
 	
 	public void setName(String name) {
 		this.name = name;
+	}
+	
+	public Integer getNumberOfEmployees() {
+		if (employees != null) {
+			return employees.size();
+		}
+		
+		return 0;
 	}
 
 }

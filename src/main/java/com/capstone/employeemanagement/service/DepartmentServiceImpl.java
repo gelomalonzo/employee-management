@@ -46,4 +46,25 @@ public class DepartmentServiceImpl implements DepartmentService {
 		return null;
 	}
 
+	@Override
+	public Department saveDepartment(Department department) {
+		return departmentRepo.save(department);
+	}
+
+	@Override
+	public void deleteDepartment(Integer departmentId) {
+		departmentRepo.deleteById(departmentId);
+	}
+
+	@Override
+	public Department getDepartmentByName(String departmentName) {
+		Optional<Department> department = departmentRepo.findByNameIgnoreCase(departmentName);
+		
+		if (department.isPresent()) {
+			return department.get();
+		}
+		
+		return null;
+	}
+
 }

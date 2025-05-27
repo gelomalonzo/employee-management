@@ -38,5 +38,27 @@ public class PageController {
 		
 		return "forward:/html/home.html";
 	}
+	
+	@GetMapping("/departments")
+	public String departmentsPage() {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		
+		if (auth == null && !auth.isAuthenticated() && auth.getPrincipal().equals("anonymousUser")) {
+			return "redirect:/login";
+		}
+		
+		return "forward:/html/department.html";
+	}
+	
+	@GetMapping("/users")
+	public String usersPage() {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		
+		if (auth == null && !auth.isAuthenticated() && auth.getPrincipal().equals("anonymousUser")) {
+			return "redirect:/login";
+		}
+		
+		return "forward:/html/user.html";
+	}
 
 }

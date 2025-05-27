@@ -8,7 +8,7 @@ function showSuccessAlert(message, duration = 3000) {
 	const alert = document.getElementById('successAlert');
 	if (!alert) return;
 
-	alert.querySelector('.alert-message').textContent = message;
+	alert.querySelector('.alert-message').innerHTML = message;
 	alert.classList.remove('d-none');
 	
 	setTimeout(() => {
@@ -20,7 +20,7 @@ async function showErrorAlert(message, duration = 3000) {
 	const alert = document.getElementById('errorAlert');
 	//if (!alert) return;
 	console.log('ERROR ALERT');
-	alert.querySelector('.alert-message').textContent = message;
+	alert.querySelector('.alert-message').innerHTML = message;
 	alert.classList.remove('d-none');
 
 	setTimeout(() => {
@@ -32,7 +32,7 @@ function showWarningAlert(message, duration = 3000) {
 	const alert = document.getElementById('warningAlert');
 	if (!alert) return;
 	
-	alert.querySelector('.alert-message').textContent = message;
+	alert.querySelector('.alert-message').innerHTML = message;
 	alert.classList.remove('d-none');
 	
 	setTimeout(() => {

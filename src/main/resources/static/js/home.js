@@ -86,7 +86,7 @@ function displayHome(averageSalary, averageAge, minAgeRange, maxAgeRange, employ
 		
 		const idCell = document.createElement('td');
 		idCell.className = 'text-center';
-		idCell.textContent = String(employee.id).padStart(5, '0');
+		idCell.textContent = 'EMP-' + String(employee.id).padStart(5, '0');
 		row.appendChild(idCell);
 		
 		const nameCell = document.createElement('td');
