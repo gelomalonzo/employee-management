@@ -32,4 +32,5 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
 	
 	// filter by name, department, and age (birth date)
 	List<Employee> findByNameContainingIgnoreCaseAndDepartmentAndBirthDateBetweenOrderByIdAsc(String name, Department department, LocalDate minDate, LocalDate maxDate);
+
 }
