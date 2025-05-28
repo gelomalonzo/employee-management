@@ -6,9 +6,13 @@ let isEditing = false;
 
 // for pagination
 let currentPage = 0;
-const pageSize = 5;
+const pageSize = 5; // five records per page
 let totalPages = 0;
 let isFilterActive = false;
+
+// for sorting
+let sortField = '';			 // 'id', 'name', 'birthDate', 'department', 'salary'
+let sortDirection = '';	 // 'asc', 'desc'
 
 window.onload = () => {
 	var departments = fetchDepartments('departmentSelect', 'ALL DEPARTMENTS');
@@ -19,43 +23,31 @@ window.onload = () => {
 document.addEventListener("DOMContentLoaded", () => {
 	const table = document.getElementById("employeeTable");
 	const tbody = document.getElementById("employeeTableBody");
-	let sortDirection = {};
+	let sortHeaderDirection = {};
 
 	table.querySelectorAll("th[data-sort]").forEach(th => {
 		th.style.cursor = "pointer";
 		th.addEventListener("click", () => {
 			const key = th.dataset.sort;
-			const direction = sortDirection[key] === "asc" ? "desc" : "asc";
-			sortDirection[key] = direction;
-
-			const rows = Array.from(tbody.querySelectorAll("tr"));
-
-			rows.sort((a, b) => {
-				let aText = a.querySelector(`td:nth-child(${th.cellIndex + 1})`).textContent.trim();
-				let bText = b.querySelector(`td:nth-child(${th.cellIndex + 1})`).textContent.trim();
-
-				if (key === "id" || key === "salary") {
-					aText = parseFloat(aText.replace(/[^0-9.-]+/g, ""));
-					bText = parseFloat(bText.replace(/[^0-9.-]+/g, ""));
-				}
-
-				if (key === "dob") {
-					aText = new Date(aText);
-					bText = new Date(bText);
-				}
-
-				if (aText < bText) return direction === "asc" ? -1 : 1;
-				if (aText > bText) return direction === "asc" ? 1 : -1;
-				return 0;
-			});
-
-			rows.forEach(row => tbody.appendChild(row));
+			const direction = sortHeaderDirection[key] === "asc" ? "desc" : "asc";
+			sortHeaderDirection[key] = direction;
+			
+			sortField = key;
+			sortDirection = direction;
 			
 			table.querySelectorAll("th[data-sort]").forEach(header => {
 				header.innerHTML = header.textContent.trim();
 			});
-
+			
 			th.innerHTML = `${th.textContent.trim()} <i class="bi ${direction === 'asc' ? 'bi-caret-up-fill' : 'bi-caret-down-fill'} ms-1"></i>`;
+
+			currentPage = 0;
+
+			if (isFilterActive) {
+				applyFilters();
+			} else {
+				fetchAllEmployees();
+			}
 		});
 	});
 });
@@ -271,7 +263,16 @@ async function fetchDepartments(containerId, selectedValue) {
 
 async function fetchAllEmployees() {
 	try {
-		const response = await fetch(`/employees/all?page=${currentPage}&size=${pageSize}`);
+		const params = new URLSearchParams({
+			page: currentPage,
+			size: pageSize,
+		});
+
+		if (sortField && sortDirection) {
+			params.append('sort', `${sortField},${sortDirection}`);
+		}
+
+		const response = await fetch(`/employees/all?${params.toString()}`);
 		const result = await response.json();
 		
 		if (!result.success) {
@@ -376,6 +377,10 @@ async function applyFilters() {
 		page: currentPage,
 		size: pageSize
 	});
+	
+	if (sortField && sortDirection) {
+		params.append('sort', `${sortField},${sortDirection}`);
+	}
 	
 	try {
 		const response = await fetch(`/employees/filter?${params.toString()}`);
