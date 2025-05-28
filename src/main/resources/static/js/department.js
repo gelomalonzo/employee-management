@@ -20,8 +20,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 			// Get selected department to transfer employees to
 			const transferDepartment = document.getElementById('transferDepartmentSelect').value;
-			
-			console.log('Transfer to Department: ' + transferDepartment);
 
 			try {
 				const response = await fetch(`/departments/${currentDepartment.id}/delete?transferDepartment=${encodeURIComponent(transferDepartment)}`, {
