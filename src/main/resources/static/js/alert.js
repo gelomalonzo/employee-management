@@ -18,8 +18,6 @@ function showSuccessAlert(message, duration = 3000) {
 
 async function showErrorAlert(message, duration = 3000) {
 	const alert = document.getElementById('errorAlert');
-	//if (!alert) return;
-	console.log('ERROR ALERT');
 	alert.querySelector('.alert-message').innerHTML = message;
 	alert.classList.remove('d-none');
 
