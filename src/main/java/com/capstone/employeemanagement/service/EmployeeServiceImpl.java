@@ -1,12 +1,13 @@
 package com.capstone.employeemanagement.service;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -50,6 +51,11 @@ public class EmployeeServiceImpl implements EmployeeService {
 	}
 	
 	@Override
+	public Page<Employee> getAllEmployees(Pageable pageable) {
+		return employeeRepo.findAll(pageable);
+	}
+	
+	@Override
 	public Employee getEmployeeById(Integer employeeId) {
 		Optional<Employee> employeeOptional = employeeRepo.findById(employeeId);
 		
@@ -61,38 +67,6 @@ public class EmployeeServiceImpl implements EmployeeService {
 	}
 	
 	@Override
-	public List<Employee> getEmployeesByName(String name) {
-		return employeeRepo.findByNameContainingIgnoreCaseOrderByIdAsc(name);
-	}
-	
-	@Override
-	public List<Employee> getEmployeesByDepartment(Integer departmentId) {
-		Department department = getDepartment(departmentId);
-		if (department == null) {
-			return null;
-		}
-		
-		return employeeRepo.findByDepartment(department);
-	}
-	
-	@Override
-	public List<Employee> getEmployeesByAge(Integer minAge, Integer maxAge) {
-		ArrayList<LocalDate> birthDateRange = getBirthDateRange(minAge, maxAge);
-		
-		return employeeRepo.findByBirthDateBetweenOrderByIdAsc(birthDateRange.get(0), birthDateRange.get(1));
-	}
-	
-	@Override
-	public List<Employee> getEmployeesByNameAndDepartment(String name, Integer departmentId) {
-		Department department = getDepartment(departmentId);
-		if (department == null) {
-			return null;
-		}
-		
-		return employeeRepo.findByNameContainingIgnoreCaseAndDepartmentOrderByIdAsc(name, department);
-	}
-	
-	@Override
 	public List<Employee> getEmployeesByNameAndAge(String name, Integer minAge, Integer maxAge) {
 		ArrayList<LocalDate> birthDateRange = getBirthDateRange(minAge, maxAge);
 		
@@ -100,15 +74,10 @@ public class EmployeeServiceImpl implements EmployeeService {
 	}
 	
 	@Override
-	public List<Employee> getEmployeesByDepartmentAndAge(Integer departmentId, Integer minAge, Integer maxAge) {
-		Department department = getDepartment(departmentId);
-		if (department == null) {
-			return null;
-		}
-		
+	public Page<Employee> getEmployeesByNameAndAge(String name, Integer minAge, Integer maxAge, Pageable pageable) {
 		ArrayList<LocalDate> birthDateRange = getBirthDateRange(minAge, maxAge);
 		
-		return employeeRepo.findByDepartmentAndBirthDateBetweenOrderByIdAsc(department, birthDateRange.get(0), birthDateRange.get(1));
+		return employeeRepo.findByNameContainingIgnoreCaseAndBirthDateBetweenOrderByIdAsc(name, birthDateRange.get(0), birthDateRange.get(1), pageable);
 	}
 	
 	@Override
@@ -124,25 +93,25 @@ public class EmployeeServiceImpl implements EmployeeService {
 	}
 	
 	@Override
-	public BigDecimal getAverageSalary(List<Employee> employees) {
-		BigDecimal sumSalary = new BigDecimal(0);
-		
-		for (Employee employee : employees) {
-			sumSalary = sumSalary.add(employee.getSalary());
+	public Page<Employee> getEmployeesByNameAndDepartmentAndAge(String name, Integer departmentId, Integer minAge, Integer maxAge, Pageable pageable) {
+		Department department = getDepartment(departmentId);
+		if (department == null) {
+			return null;
 		}
 		
-		return sumSalary.divide(new BigDecimal(employees.size()));
+		ArrayList<LocalDate> birthDateRange = getBirthDateRange(minAge, maxAge);
+		
+		return employeeRepo.findByNameContainingIgnoreCaseAndDepartmentAndBirthDateBetweenOrderByIdAsc(name, department, birthDateRange.get(0), birthDateRange.get(1), pageable);
 	}
 	
 	@Override
-	public Integer getAverageAge(List<Employee> employees) {
-		int sumAge = 0;
-		
-		for (Employee employee : employees) {
-			sumAge += employee.getAge();
+	public List<Employee> getEmployeesByDepartment(Integer departmentId) {
+		Department department = getDepartment(departmentId);
+		if (department == null) {
+			return null;
 		}
 		
-		return sumAge / employees.size();
+		return employeeRepo.findByDepartment(department);
 	}
 
 	@Override

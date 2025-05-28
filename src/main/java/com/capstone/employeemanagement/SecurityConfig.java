@@ -2,7 +2,6 @@ package com.capstone.employeemanagement;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -21,7 +20,7 @@ public class SecurityConfig {
 				.requestMatchers("/home", "/home.html", "/home.js").hasAnyRole("ADMIN", "USER") // home routes
 				.requestMatchers("/departments", "/departments.html", "/departments.js", "/departments/**").hasRole("ADMIN")
 //				.requestMatchers(HttpMethod.DELETE, "/departments/**").hasRole("ADMIN")
-				.requestMatchers("/employees/*", "/employees/*/edit", "/employees/*/delete").authenticated() // employee routes
+				.requestMatchers("/employees/*", "/employees/*/edit", "/employees/*/delete", "/employees/filter").authenticated() // employee routes
 				.requestMatchers("/component/employee-modal.html", "/js/employee-modal.js").authenticated() // employee modal routes
 				.requestMatchers("/departments/*").authenticated() // department routes
 				.requestMatchers("/html/*", "/js/*", "person-lines-fill.svg").permitAll() // static routes

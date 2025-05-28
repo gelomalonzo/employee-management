@@ -4,6 +4,12 @@ loadModal('modalContainer');
 
 let isEditing = false;
 
+// for pagination
+let currentPage = 0;
+const pageSize = 5;
+let totalPages = 0;
+let isFilterActive = false;
+
 window.onload = () => {
 	var departments = fetchDepartments('departmentSelect', 'ALL DEPARTMENTS');
 	var employees = fetchAllEmployees();
@@ -54,9 +60,9 @@ document.addEventListener("DOMContentLoaded", () => {
 	});
 });
 
-function displayHome(averageSalary, averageAge, minAgeRange, maxAgeRange, employees) {
+function displayHome(noOfEmployees, averageSalary, averageAge, minAgeRange, maxAgeRange, employees) {
 	const noOfEmployeesContainer = document.getElementById('noOfEmployeesContainer');
-	noOfEmployeesContainer.innerHTML = employees.length;
+	noOfEmployeesContainer.innerHTML = noOfEmployees;
 	
 	const averageSalaryContainer = document.getElementById('averageSalaryContainer');
 	averageSalaryContainer.innerHTML = Number(averageSalary).toLocaleString('en-US', {
@@ -137,6 +143,100 @@ function displayHome(averageSalary, averageAge, minAgeRange, maxAgeRange, employ
 	});
 }
 
+function renderPagination() {
+	const container = document.getElementById('paginationContainer');
+	container.innerHTML = '';
+
+	if (totalPages <= 1) {
+		return;
+	}
+	
+	const firstBtn = document.createElement('button');
+	firstBtn.className = 'btn btn-outline-secondary mx-1';
+	firstBtn.textContent = '<<';
+	firstBtn.disabled = currentPage === 0;
+	firstBtn.onclick = () => {
+		currentPage = 0;
+		if (isFilterActive) {
+			applyFilters();
+		} else {
+			fetchAllEmployees();
+		}
+	};
+	container.appendChild(firstBtn);
+	
+	const prevBtn = document.createElement('button');
+	prevBtn.className = 'btn btn-outline-secondary mx-1';
+	prevBtn.textContent = '<';
+	prevBtn.disabled = currentPage === 0;
+	prevBtn.onclick = () => {
+		if (currentPage > 0) {
+			currentPage--;
+			if (isFilterActive) {
+				applyFilters();
+			} else {
+				fetchAllEmployees();
+			}
+		}
+	};
+	container.appendChild(prevBtn);
+	
+	let maxPageButtons = 5;
+	let startPage = Math.max(0, currentPage - Math.floor(maxPageButtons / 2));
+	let endPage = startPage + maxPageButtons - 1;
+
+	if (endPage >= totalPages) {
+		endPage = totalPages - 1;
+		startPage = Math.max(0, endPage - maxPageButtons + 1);
+	}
+
+	for (let i = startPage; i <= endPage; i++) {
+		const btn = document.createElement('button');
+		btn.className = `btn mx-1 ${i === currentPage ? 'btn-secondary' : 'btn-outline-secondary'}`;
+		btn.textContent = i + 1;
+		btn.onclick = () => {
+			currentPage = i;
+			if (isFilterActive) {
+				applyFilters();
+			} else {
+				fetchAllEmployees();
+			}
+		};
+		container.appendChild(btn);
+	}
+	
+	const nextBtn = document.createElement('button');
+	nextBtn.className = 'btn btn-outline-secondary mx-1';
+	nextBtn.textContent = '>';
+	nextBtn.disabled = currentPage === totalPages - 1;
+	nextBtn.onclick = () => {
+		if (currentPage < totalPages - 1) {
+			currentPage++;
+			if (isFilterActive) {
+				applyFilters();
+			} else {
+				fetchAllEmployees();
+			}
+		}
+	};
+	container.appendChild(nextBtn);
+	
+	const lastBtn = document.createElement('button');
+	lastBtn.className = 'btn btn-outline-secondary mx-1';
+	lastBtn.textContent = '>>';
+	lastBtn.disabled = currentPage === totalPages - 1;
+	lastBtn.onclick = () => {
+		currentPage = totalPages - 1;
+		if (isFilterActive) {
+			applyFilters();
+		} else {
+			fetchAllEmployees();
+		}
+	};
+	container.appendChild(lastBtn);
+}
+
+
 async function fetchDepartments(containerId, selectedValue) {
 	let hasSelected = false;
 	
@@ -171,7 +271,7 @@ async function fetchDepartments(containerId, selectedValue) {
 
 async function fetchAllEmployees() {
 	try {
-		const response = await fetch('/employees/all');
+		const response = await fetch(`/employees/all?page=${currentPage}&size=${pageSize}`);
 		const result = await response.json();
 		
 		if (!result.success) {
@@ -182,13 +282,20 @@ async function fetchAllEmployees() {
 			showWarningAlert(result.message, 4000);
 		}
 		
-		displayHome(result.averageSalary, result.averageAge, result.minAgeRange, result.maxAgeRange, result.employees);
+		displayHome(result.noOfEmployees, result.averageSalary, result.averageAge, result.minAgeRange, result.maxAgeRange, result.employees);
+		
+		totalPages = result.totalPages;
+		renderPagination();
 	} catch (error) {
 		console.error('Error fetching employees: ', error);
 	}
 }
 
 async function fetchEmployeeId() {
+	const container = document.getElementById('paginationContainer');
+	container.innerHTML = '';
+	isFilterActive = false;
+	
 	const searchIdInput = document.getElementById('searchIdInput')
 	const employeeId = searchIdInput.value;
 	if (employeeId === '') {
@@ -231,7 +338,7 @@ async function fetchEmployeeId() {
 			showWarningAlert(result.message, 4000);
 		}
 		
-		displayHome(result.averageSalary, result.averageAge, result.minAgeRange, result.maxAgeRange, result.employees);
+		displayHome(result.noOfEmployees, result.averageSalary, result.averageAge, result.minAgeRange, result.maxAgeRange, result.employees);
 	} catch (error) {
 		console.error('Error fetching employee by ID: ', error);
 	}
@@ -240,6 +347,8 @@ async function fetchEmployeeId() {
 async function applyFilters() {
 	const searchIdInput = document.getElementById('searchIdInput');
 	searchIdInput.value = '';
+	
+	isFilterActive = true;
 	
 	const employeeName = document.getElementById('searchNameInput').value;
 	const departmentName = document.getElementById('departmentSelect').value;
@@ -263,7 +372,9 @@ async function applyFilters() {
 		name: employeeName,
 		departmentId: departmentId,
 		minAge: minAge,
-		maxAge: maxAge
+		maxAge: maxAge,
+		page: currentPage,
+		size: pageSize
 	});
 	
 	try {
@@ -278,7 +389,10 @@ async function applyFilters() {
 			showWarningAlert(result.message, 4000);
 		}
 		
-		displayHome(result.averageSalary, result.averageAge, result.minAgeRange, result.maxAgeRange, result.employees);
+		displayHome(result.noOfEmployees, result.averageSalary, result.averageAge, result.minAgeRange, result.maxAgeRange, result.employees);
+		
+		totalPages = result.totalPages;
+		renderPagination();
 	} catch (error) {
 		console.error('Error fetching filtered employee list: ', error);
 	}
@@ -305,5 +419,7 @@ async function resetFilters() {
 	const maxAgeInput = document.getElementById('maxAgeInput');
 	maxAgeInput.value = '';
 	
+	currentPage = 0;
+	isFilterActive = false;
 	fetchAllEmployees();
 }

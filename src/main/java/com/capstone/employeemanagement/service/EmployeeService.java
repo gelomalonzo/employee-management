@@ -1,24 +1,26 @@
 package com.capstone.employeemanagement.service;
 
-import java.math.BigDecimal;
 import java.util.List;
 
-import com.capstone.employeemanagement.model.Department;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import com.capstone.employeemanagement.model.Employee;
 
 public interface EmployeeService {
 	
 	List<Employee> getAllEmployees();
+	Page<Employee> getAllEmployees(Pageable pageable);
+	
 	Employee getEmployeeById(Integer employeeId);
-	List<Employee> getEmployeesByName(String name);
-	List<Employee> getEmployeesByDepartment(Integer departmentId);
-	List<Employee> getEmployeesByAge(Integer minAge, Integer maxAge);
-	List<Employee> getEmployeesByNameAndDepartment(String name, Integer departmentId);
+	
 	List<Employee> getEmployeesByNameAndAge(String name, Integer minAge, Integer maxAge);
-	List<Employee> getEmployeesByDepartmentAndAge(Integer departmentId, Integer minAge, Integer maxAge);
+	Page<Employee> getEmployeesByNameAndAge(String name, Integer minAge, Integer maxAge, Pageable pageable);
+	
 	List<Employee> getEmployeesByNameAndDepartmentAndAge(String name, Integer departmentId, Integer minAge, Integer maxAge);
-	BigDecimal getAverageSalary(List<Employee> employees);
-	Integer getAverageAge(List<Employee> employees);
+	Page<Employee> getEmployeesByNameAndDepartmentAndAge(String name, Integer departmentId, Integer minAge, Integer maxAge, Pageable pageable);
+	
+	List<Employee> getEmployeesByDepartment(Integer departmentId);
 	
 	Employee saveEmployee(Employee employee); // add new employee or update employee details
 	void deleteEmployee(Integer employeeId);

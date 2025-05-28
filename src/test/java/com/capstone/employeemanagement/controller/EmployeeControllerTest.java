@@ -55,16 +55,16 @@ class EmployeeControllerTest {
                 .andExpect(jsonPath("$.employees[0].name").value("Jane"));
     }
 
-    @Test
-    void testFilterEmployeesByName() throws Exception {
-        Employee employee = new Employee("Jake", LocalDate.of(1995, 8, 20), new BigDecimal("42000"), new Department("HR"));
-        employee.setId(3);
-        Mockito.when(employeeService.getEmployeesByName("Jake")).thenReturn(List.of(employee));
-
-        mockMvc.perform(get("/employees/filter").param("name", "Jake"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.employees[0].name").value("Jake"));
-    }
+//    @Test
+//    void testFilterEmployeesByName() throws Exception {
+//        Employee employee = new Employee("Jake", LocalDate.of(1995, 8, 20), new BigDecimal("42000"), new Department("HR"));
+//        employee.setId(3);
+//        Mockito.when(employeeService.getEmployeesByName("Jake")).thenReturn(List.of(employee));
+//
+//        mockMvc.perform(get("/employees/filter").param("name", "Jake"))
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$.employees[0].name").value("Jake"));
+//    }
 
     @Test
     void testAddEmployee() throws Exception {

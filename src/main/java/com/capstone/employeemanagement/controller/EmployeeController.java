@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,40 +37,8 @@ public class EmployeeController {
 		this.departmentService = departmentService;
 	}
 	
-	private List<Employee> getFilteredEmployees(String name, Integer departmentId, Integer minAge, Integer maxAge) {
-		if (minAge == null) {
-			minAge = 18;
-		}
-		
-		if (maxAge == null) {
-			maxAge = 100;
-		} else {
-			maxAge++;
-		}
-		
-		List<Employee> employees = new ArrayList<>();
-		
-		if (name != null && !name.isEmpty() && departmentId != null && minAge != null) { // all are given
-			employees = employeeService.getEmployeesByNameAndDepartmentAndAge(name, departmentId, minAge, maxAge);
-		} else if (name != null && !name.isEmpty() && departmentId != null && minAge == null) { // name and department are given
-			employees = employeeService.getEmployeesByNameAndDepartment(name, departmentId);
-		} else if (name != null && !name.isEmpty() && departmentId == null && minAge != null) { // name and age are given
-			employees = employeeService.getEmployeesByNameAndAge(name, minAge, maxAge);
-		} else if ((name == null || name.isEmpty()) && departmentId != null && minAge != null) { // department and age are given
-			employees = employeeService.getEmployeesByDepartmentAndAge(departmentId, minAge, maxAge);
-		} else if (name != null && !name.isEmpty() && departmentId == null && minAge == null) { // name is given
-			employees = employeeService.getEmployeesByName(name);
-		} else if ((name == null || name.isEmpty()) && departmentId != null && minAge == null) { // department is given
-			employees = employeeService.getEmployeesByDepartment(departmentId);
-		} else if ((name == null || name.isEmpty()) && departmentId == null && minAge != null) { // age is given
-			employees = employeeService.getEmployeesByAge(minAge, maxAge);
-		}
-		
-		return employees;
-	}
-	
-	private Map<String, Object> getAverages(List<Employee> employees) {
-		Map<String, Object> averages = new HashMap<>();
+	private Map<String, Object> getSummary(List<Employee> employees) {
+		Map<String, Object> summary = new HashMap<>();
 		
 		BigDecimal averageSalary = new BigDecimal(0);
 		Integer averageAge = 0;
@@ -93,33 +63,13 @@ public class EmployeeController {
 			averageAge = averageAge / employees.size();
 		}
 		
-		averages.put("averageSalary", averageSalary);
-		averages.put("averageAge", averageAge);
-		averages.put("minAgeRange", minAgeRange);
-		averages.put("maxAgeRange", maxAgeRange);
+		summary.put("noOfEmployees", employees.size());
+		summary.put("averageSalary", averageSalary);
+		summary.put("averageAge", averageAge);
+		summary.put("minAgeRange", minAgeRange);
+		summary.put("maxAgeRange", maxAgeRange);
 		
-		return averages;
-	}
-	
-	private Map<String, Object> generateResponseForEmployeeList(List<Employee> employees) {
-		Map<String, Object> averages = getAverages(employees);
-		
-		Map<String, Object> response = new HashMap<>();
-		response.put("success", true);
-		response.put("employees", employees);
-		response.put("isEmpty", employees.isEmpty());
-		response.put("averageSalary", averages.get("averageSalary"));
-		response.put("averageAge", averages.get("averageAge"));
-		response.put("minAgeRange", averages.get("minAgeRange"));
-		response.put("maxAgeRange", averages.get("maxAgeRange"));
-		
-		if (employees.isEmpty()) {
-			response.put("message", "No employees found.");
-		} else {
-			response.put("message", "Successfully retrieved employee list.");
-		}
-		
-		return response;
+		return summary;
 	}
 	
 	private Map<String, Object> generateResponseForSavedEmployee(Employee savedEmployee) {
@@ -133,10 +83,30 @@ public class EmployeeController {
 	}
 	
 	@GetMapping("/employees/all")
-	public ResponseEntity<?> getAllEmployees() {
-		List<Employee> employees = employeeService.getAllEmployees();
+	public ResponseEntity<?> getAllEmployees(Pageable pageable) {
+		Map<String, Object> response = new HashMap<>();
 		
-		Map<String, Object> response = generateResponseForEmployeeList(employees);
+		List<Employee> employees = employeeService.getAllEmployees();
+		Map<String, Object> summary = getSummary(employees);
+		response.putAll(summary);
+		
+		Page<Employee> employeePage = employeeService.getAllEmployees(pageable);
+		List<Employee> employeesInPage = employeePage.getContent();
+		
+		response.put("employees", employeesInPage);
+		response.put("isEmpty", employees.isEmpty());
+		response.put("totalElements", employeePage.getTotalElements());
+		response.put("totalPages", employeePage.getTotalPages());
+		response.put("currentPage", employeePage.getNumber());
+		response.put("pageSize", employeePage.getSize());
+		
+		if (employees.isEmpty()) {
+			response.put("message", "No employees found.");
+		} else {
+			response.put("message", "Successfully retrieved employee list.");
+		}
+		
+		response.put("success", true);
 		
 		return ResponseEntity.ok(response);
 	}
@@ -145,6 +115,8 @@ public class EmployeeController {
 	public ResponseEntity<?> getEmployeeById(
 		@PathVariable("id") Integer id
 	) {
+		Map<String, Object> response = new HashMap<>();
+		
 		List<Employee> employees = new ArrayList<>();
 		
 		Employee employee = employeeService.getEmployeeById(id);
@@ -152,7 +124,17 @@ public class EmployeeController {
 			employees.add(employee);
 		}
 		
-		Map<String, Object> response = generateResponseForEmployeeList(employees);
+		response.putAll(getSummary(employees));
+		
+		response.put("success", true);
+		response.put("isEmpty", employees.isEmpty());
+		response.put("employees", employees);
+		
+		if (employees.isEmpty()) {
+			response.put("message", "No employees found.");
+		} else {
+			response.put("message", "Successfully retrieved employee list.");
+		}
 		
 		return ResponseEntity.ok(response);
 	}
@@ -162,11 +144,56 @@ public class EmployeeController {
 		@RequestParam(name = "name", required = false) String name,
 		@RequestParam(name = "departmentId", required = false) Integer departmentId,
 		@RequestParam(name = "minAge", required = false) Integer minAge,
-		@RequestParam(name = "maxAge", required = false) Integer maxAge
+		@RequestParam(name = "maxAge", required = false) Integer maxAge,
+		Pageable pageable
 	) {
-		List<Employee> employees = getFilteredEmployees(name, departmentId, minAge, maxAge);
+		Map<String, Object> response = new HashMap<>();
 		
-		Map<String, Object> response = generateResponseForEmployeeList(employees);
+		if (name == null) {
+			name = "";
+		}
+		
+		if (minAge == null) {
+			minAge = 18;
+		}
+		
+		if (maxAge == null) {
+			maxAge = 100;
+		} else {
+			maxAge++;
+		}
+		
+		List<Employee> employees = new ArrayList<>();
+		Page<Employee> employeePage = Page.empty();
+		List<Employee> employeesInPage = new ArrayList<>();
+		
+		if (departmentId == null) {
+			employees = employeeService.getEmployeesByNameAndAge(name, minAge, maxAge);
+			employeePage = employeeService.getEmployeesByNameAndAge(name, minAge, maxAge, pageable);
+			employeesInPage = employeePage.getContent();
+		} else {
+			employees = employeeService.getEmployeesByNameAndDepartmentAndAge(name, departmentId, minAge, maxAge);
+			employeePage = employeeService.getEmployeesByNameAndDepartmentAndAge(name, departmentId, minAge, maxAge, pageable);
+			employeesInPage = employeePage.getContent();
+		}
+		
+		Map<String, Object> summary = getSummary(employees);
+		response.putAll(summary);
+		
+		response.put("employees", employeesInPage);
+		response.put("isEmpty", employees.isEmpty());
+		response.put("totalElements", employeePage.getTotalElements());
+		response.put("totalPages", employeePage.getTotalPages());
+		response.put("currentPage", employeePage.getNumber());
+		response.put("pageSize", employeePage.getSize());
+		
+		if (employees.isEmpty()) {
+			response.put("message", "No employees found.");
+		} else {
+			response.put("message", "Successfully retrieved employee list.");
+		}
+		
+		response.put("success", true);
 		
 		return ResponseEntity.ok(response);
 	}
