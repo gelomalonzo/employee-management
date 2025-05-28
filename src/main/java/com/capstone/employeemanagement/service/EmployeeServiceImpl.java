@@ -77,7 +77,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 	public Page<Employee> getEmployeesByNameAndAge(String name, Integer minAge, Integer maxAge, Pageable pageable) {
 		ArrayList<LocalDate> birthDateRange = getBirthDateRange(minAge, maxAge);
 		
-		return employeeRepo.findByNameContainingIgnoreCaseAndBirthDateBetweenOrderByIdAsc(name, birthDateRange.get(0), birthDateRange.get(1), pageable);
+		return employeeRepo.findByNameContainingIgnoreCaseAndBirthDateBetween(name, birthDateRange.get(0), birthDateRange.get(1), pageable);
 	}
 	
 	@Override
@@ -101,7 +101,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 		
 		ArrayList<LocalDate> birthDateRange = getBirthDateRange(minAge, maxAge);
 		
-		return employeeRepo.findByNameContainingIgnoreCaseAndDepartmentAndBirthDateBetweenOrderByIdAsc(name, department, birthDateRange.get(0), birthDateRange.get(1), pageable);
+		return employeeRepo.findByNameContainingIgnoreCaseAndDepartmentAndBirthDateBetween(name, department, birthDateRange.get(0), birthDateRange.get(1), pageable);
 	}
 	
 	@Override

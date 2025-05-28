@@ -11,8 +11,8 @@ let totalPages = 0;
 let isFilterActive = false;
 
 // for sorting
-let sortField = '';			 // 'id', 'name', 'birthDate', 'department', 'salary'
-let sortDirection = '';	 // 'asc', 'desc'
+let sortField = 'id';
+let sortDirection = 'asc';
 
 window.onload = () => {
 	var departments = fetchDepartments('departmentSelect', 'ALL DEPARTMENTS');
@@ -375,14 +375,12 @@ async function applyFilters() {
 		minAge: minAge,
 		maxAge: maxAge,
 		page: currentPage,
-		size: pageSize
+		size: pageSize,
+		sort: `${sortField},${sortDirection}`
 	});
 	
-	if (sortField && sortDirection) {
-		params.append('sort', `${sortField},${sortDirection}`);
-	}
-	
 	try {
+		console.log("Request URL:", `/employees/filter?${params.toString()}`);
 		const response = await fetch(`/employees/filter?${params.toString()}`);
 		const result = await response.json();
 		
@@ -426,5 +424,7 @@ async function resetFilters() {
 	
 	currentPage = 0;
 	isFilterActive = false;
+	let sortField = 'id';
+	let sortDirection = 'asc';
 	fetchAllEmployees();
 }

@@ -16,11 +16,11 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
 	
 	// filter by name and age (birth date)
 	List<Employee> findByNameContainingIgnoreCaseAndBirthDateBetweenOrderByIdAsc(String name, LocalDate minDate, LocalDate maxDate);
-	Page<Employee> findByNameContainingIgnoreCaseAndBirthDateBetweenOrderByIdAsc(String name, LocalDate minDate, LocalDate maxDate, Pageable pageable);
+	Page<Employee> findByNameContainingIgnoreCaseAndBirthDateBetween(String name, LocalDate minDate, LocalDate maxDate, Pageable pageable);
 	
 	// filter by name, department, and age (birth date)
 	List<Employee> findByNameContainingIgnoreCaseAndDepartmentAndBirthDateBetweenOrderByIdAsc(String name, Department department, LocalDate minDate, LocalDate maxDate);
-	Page<Employee> findByNameContainingIgnoreCaseAndDepartmentAndBirthDateBetweenOrderByIdAsc(String name, Department department, LocalDate minDate, LocalDate maxDate, Pageable pageable);
+	Page<Employee> findByNameContainingIgnoreCaseAndDepartmentAndBirthDateBetween(String name, Department department, LocalDate minDate, LocalDate maxDate, Pageable pageable);
 	
 	// for obtaining number of employees in the department
 	List<Employee> findByDepartment(Department department);
